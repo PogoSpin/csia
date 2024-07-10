@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import tkinter as tk
 
 app = ctk.CTk()
 
@@ -10,10 +11,19 @@ ctk.set_default_color_theme('blue')
 def signIn():
    print('Sign In attempt')
 
-signInText = ctk.CTkLabel(app, text = 'Sign In')
-button = ctk.CTkButton(app, text = 'Sign In', command = signIn)
-button.grid(row = 0, column = 0, padx = 0, pady = 0)
-app.grid_columnconfigure(0, weight = 1)
-app.grid_rowconfigure(0, weight = 1)
+signInText = ctk.CTkLabel(app, text = 'Sign In', font = ctk.CTkFont('Roboto', 40))
+signInText.pack(pady = 60)
+
+emailInput = ctk.CTkEntry(app, placeholder_text = 'Email', width = 600, height = 40, font = ctk.CTkFont('Roboto', 20))
+emailInput.pack(pady = 30)
+
+passwordInput = ctk.CTkEntry(app, placeholder_text = 'Password', width = 600, height = 40, show = '•', font = ctk.CTkFont('Roboto', 20))
+passwordInput.pack()
+
+signInButton = ctk.CTkButton(app, text = 'Sign In', font = ctk.CTkFont('Roboto', 30), height = 50)
+signInButton.pack(pady = 30)
+
+
+
 
 app.mainloop()
