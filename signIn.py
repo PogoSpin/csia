@@ -4,7 +4,7 @@ signInWindow = ctk.CTk()
 
 signInWindow.title('Class Maagement System')
 signInWindow.geometry('1200x800')
-ctk.set_signInWindowearance_mode('dark')
+ctk.set_appearance_mode('dark')
 ctk.set_default_color_theme('blue')
 
 def signIn():
