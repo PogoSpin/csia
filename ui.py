@@ -9,7 +9,10 @@ ctk.set_appearance_mode('dark')
 ctk.set_default_color_theme('blue')
 
 def signIn():
-    pass
+    if emailInput.get() == 'test email' and passwordInput.get() == 'test password':
+        print('Signed In')
+    else:
+        print('Incorrect password')
 
 signInText = ctk.CTkLabel(app, text = 'Sign In', font = ctk.CTkFont('Roboto', 60))
 signInText.place(relx = 0.05, rely = 0.1)
