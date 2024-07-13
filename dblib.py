@@ -1,4 +1,4 @@
-import psycopg2
+from psycopg2 import connect
 
 class sqlConnection:
     def __init__(self, connectionParameters: dict):
@@ -7,7 +7,7 @@ class sqlConnection:
         self.cursor = None
 
     def initiate(self):
-        self.connection = psycopg2.connect(**self.connectionParameters)
+        self.connection = connect(**self.connectionParameters)
         self.cursor = self.connection.cursor()
 
     def resultFromQuery(self, query: str) -> list:
