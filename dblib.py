@@ -1,21 +1,16 @@
 import psycopg2
 
 class sqlConnection:
-    def __init__(self, connectionParameters):
+    def __init__(self, connectionParameters: dict):
         self.connectionParameters = connectionParameters
         self.connection = None
         self.cursor = None
 
     def initiate(self):
-        try:
-            self.connection = psycopg2.connect(**self.connectionParameters)
-            self.cursor = self.connection.cursor()
-            return None
-        
-        except Exception as e:
-            return e
+        self.connection = psycopg2.connect(**self.connectionParameters)
+        self.cursor = self.connection.cursor()
 
-    def resultFromQuery(self, query) -> list:
+    def resultFromQuery(self, query: str) -> list:
         self.cursor.execute(query)
         return self.cursor.fetchall()
     
