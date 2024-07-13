@@ -16,19 +16,23 @@ def verifySignIn(connection: sqlConnection, username: str, password: str) -> str
 
 def openSignInWindow(databaseConnection):
     def signInAction():
-        role = verifySignIn(databaseConnection, emailInput.get(), passwordInput.get())
+        typedEmail = emailInput.get()
+        typedPass = passwordInput.get()
+        role = verifySignIn(databaseConnection, typedEmail, typedPass)
         if role:
+            if rememberCredsCheckbox.get() == 1:
+                app.writeSavedCredentials(app.getCredentialsPath(), typedEmail, typedPass)
+
             signInWindow.destroy()
             app.openDashboard(role)
         else:
             # let user know of failed sign in
-            print('failed sign in')
-            pass
+            print('Incorrect password for sign-in')
             
 
     signInWindow = ctk.CTk()
 
-    signInWindow.title('Class Maagement System')
+    signInWindow.title('Class Management System')
     signInWindow.geometry('1200x800')
     ctk.set_appearance_mode('dark')
     ctk.set_default_color_theme('blue')
@@ -42,7 +46,11 @@ def openSignInWindow(databaseConnection):
     passwordInput = ctk.CTkEntry(signInWindow, placeholder_text = 'Password', width = 700, height = 40, show = '•', font = ctk.CTkFont('Roboto', 20))
     passwordInput.place(relx = 0.05, rely = 0.465)
 
-    signInButton = ctk.CTkButton(signInWindow, text = 'Sign In', font = ctk.CTkFont('Roboto', 30), height = 50, command = signInAction)
-    signInButton.place(relx = 0.05, rely = 0.55)
+    signInButton = ctk.CTkButton(signInWindow, text = 'Sign In', font = ctk.CTkFont('Roboto', 30), height = 50, width = 150, command = signInAction)
+    signInButton.place(relx = 0.05, rely = 0.54)
+
+    rememberCredsCheckbox = ctk.CTkCheckBox(signInWindow, text = 'Remember me', font = ctk.CTkFont('Roboto', 17), checkbox_width = 32, checkbox_height = 32)
+    rememberCredsCheckbox.place(relx = 0.51, rely = 0.55)
+    rememberCredsCheckbox.select()
 
     signInWindow.mainloop()
