@@ -78,7 +78,7 @@ def main():
 def openDashboard(userRole):
     print(f'opening dashboard with role {userRole}')
     dashboardWindow = ctk.CTk()
-    dashboardWindow.title('Class Management System')
+    dashboardWindow.title('Class Management System Dashboard')
     dashboardWindow.geometry('1200x800')
     ctk.set_appearance_mode('dark')
     ctk.set_default_color_theme('blue')
