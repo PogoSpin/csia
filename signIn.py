@@ -15,7 +15,7 @@ def verifySignIn(connection: sqlConnection, username: str, password: str) -> str
     
 
 def openSignInWindow(databaseConnection):
-    def signInAction():
+    def signInAction(event = None):
         typedEmail = emailInput.get()
         typedPass = passwordInput.get()
         role = verifySignIn(databaseConnection, typedEmail, typedPass)
@@ -52,5 +52,7 @@ def openSignInWindow(databaseConnection):
     rememberCredsCheckbox = ctk.CTkCheckBox(signInWindow, text = 'Remember me', font = ctk.CTkFont('Roboto', 17), checkbox_width = 32, checkbox_height = 32)
     rememberCredsCheckbox.place(relx = 0.51, rely = 0.55)
     rememberCredsCheckbox.select()
+
+    signInWindow.bind('<Return>', signInAction)
 
     signInWindow.mainloop()
