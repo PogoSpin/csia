@@ -32,7 +32,7 @@ def openSignInWindow(databaseConnection):
 
     signInWindow = ctk.CTk()
 
-    signInWindow.title('Class Management System')
+    signInWindow.title('Class Management System Sign I')
     signInWindow.geometry('1200x800')
     ctk.set_appearance_mode('dark')
     ctk.set_default_color_theme('blue')
