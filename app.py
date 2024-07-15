@@ -2,8 +2,7 @@ import customtkinter as ctk
 from tkinter import ttk
 from signIn import *
 from dblib import *
-from pathlib import Path
-import os
+from utils import *
 
 connectionParameters = {
     'dbname': 'dlclassmanagement',
@@ -12,42 +11,6 @@ connectionParameters = {
     'host': 'localhost',
     'port': '5432'
 }
-
-def getCredentialsPath() -> str:
-    if os.name == 'nt':  # for windows
-        storeDir = os.getenv('appdata')
-    else:  # for mac
-        storeDir = os.path.join(Path.home(), '.config')
-
-    storeDir = os.path.join(storeDir, 'dlClassManagement')
-
-    if not os.path.exists(storeDir):
-        os.makedirs(storeDir)
-    return storeDir
-
-def readSavedCredentials(storeDir: str) -> list[str, str]:
-    path = os.path.join(storeDir, 'credentials.dat')
-
-    if os.path.exists(path):
-        with open(path, 'r') as f:
-            data = f.read().split('\n')
-        return data
-    else:
-        return None
-
-def writeSavedCredentials(storeDir: str, username: str, password: str):
-    path = os.path.join(storeDir, 'credentials.dat')
-
-    with open(path, 'w') as f:
-        f.truncate(0)
-        f.write(username + '\n')
-        f.write(password)
-
-def clearSavedCredentials(storeDir: str):
-    path = os.path.join(storeDir, 'credentials.dat')
-
-    with open(path, 'w') as f:
-        f.truncate(0)
 
 
 cornerRadius = 20
@@ -98,29 +61,36 @@ def openDashboard(userRole):
     schoolsTab.rowconfigure(0, weight = 1)
     schoolsTab.columnconfigure(0, weight = 1)
 
-    # classesTab.rowconfigure(0, weight = 1)
-    # classesTab.columnconfigure(0, weight = 1)
+    classesTab.rowconfigure(0, weight = 1)
+    classesTab.columnconfigure(0, weight = 1)
 
-    # studentsTab.rowconfigure(0, weight = 1)
-    # studentsTab.columnconfigure(0, weight = 1)
+    studentsTab.rowconfigure(0, weight = 1)
+    studentsTab.columnconfigure(0, weight = 1)
 
-    # table style
-    style = ttk.Style()
-    style.theme_use('default')
-    style.configure('Treeview.Heading', font = (None, 60), background = '#2B2B2B', foreground = '#DCE4EE', borderwidth = 0)
-    style.configure('Treeview', font = (None, 45), rowheight = 100, background = '#2B2B2B', foreground = '#DCE4EE', fieldbackground = '#2B2B2B', borderwidth = 0)
-    style.map('Treeview.Heading', background = [('selected', 'none')])
 
-    # table setup
-    table = ttk.Treeview(schoolsTab, columns = ('schoolId', 'schoolName'), show = 'headings')
-    table.heading('schoolId', text = 'School ID')
-    table.heading('schoolName', text = 'School Name')
-    table.tag_configure('gr', background = 'green')
+    schoolTable = niceTable(schoolsTab, ('schoolName',), ('School Name',))
+    classTable = niceTable(classesTab, ('classId', 'level', 'schoolName'), ('Class ID', 'Level', 'School Name'))
+    studentsTable = niceTable(studentsTab, ('email', 'fname', 'lname', 'grade'), ('Email', 'First Name', 'Last Name', 'Grade'))
 
-    table.insert(parent = '', index = 0, values = ('3', 'School 1 Test'))
-    table.insert(parent = '', index = 0, values = ('1', 'School 2 Test'))
 
-    table.grid(row = 0, column = 0, sticky = 'nsew')
+
+    schoolTable.grid(row = 0, column = 0, sticky = 'nsew')
+
+    schoolTable.insert(parent = '', index = 0, values = ('School 1 Test',))
+    schoolTable.insert(parent = '', index = 0, values = ('School 2 Test',))
+
+    
+    classTable.grid(row = 0, column = 0, sticky = 'nsew')
+
+    classTable.insert(parent = '', index = 0, values = ('Classes 1 Test',))
+    classTable.insert(parent = '', index = 0, values = ('Classes 2 Test',))
+
+    
+    studentsTable.grid(row = 0, column = 0, sticky = 'nsew')
+
+    studentsTable.insert(parent = '', index = 0, values = ('Students 1 Test',))
+    studentsTable.insert(parent = '', index = 0, values = ('Students 2 Test',))
+
 
     # rightPanel
     rightPanel = ctk.CTkFrame(dashboardWindow, height = 715, width = 300, corner_radius = cornerRadius)
