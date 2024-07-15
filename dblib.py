@@ -10,7 +10,7 @@ class sqlConnection:
         self.connection = connect(**self.connectionParameters)
         self.cursor = self.connection.cursor()
 
-    def resultFromQuery(self, query: str) -> list:
+    def resultFromQuery(self, query: str) -> list[tuple]:
         self.cursor.execute(query)
         return self.cursor.fetchall()
     
