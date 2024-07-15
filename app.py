@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from tkinter import ttk
 from signIn import *
 from dblib import *
 from pathlib import Path
@@ -93,30 +94,38 @@ def openDashboard(userRole):
     classesTab = tabview.add('Classes')
     studentsTab = tabview.add('Students')
 
-    # grid setup for test labels
+    # grid setup for tables
     schoolsTab.rowconfigure(0, weight = 1)
     schoolsTab.columnconfigure(0, weight = 1)
 
-    classesTab.rowconfigure(0, weight = 1)
-    classesTab.columnconfigure(0, weight = 1)
+    # classesTab.rowconfigure(0, weight = 1)
+    # classesTab.columnconfigure(0, weight = 1)
 
-    studentsTab.rowconfigure(0, weight = 1)
-    studentsTab.columnconfigure(0, weight = 1)
+    # studentsTab.rowconfigure(0, weight = 1)
+    # studentsTab.columnconfigure(0, weight = 1)
 
+    # table style
+    style = ttk.Style()
+    style.theme_use('default')
+    style.configure('Treeview.Heading', font = (None, 60), background = '#2B2B2B', foreground = '#DCE4EE', borderwidth = 0)
+    style.configure('Treeview', font = (None, 45), rowheight = 100, background = '#2B2B2B', foreground = '#DCE4EE', fieldbackground = '#2B2B2B', borderwidth = 0)
+    style.map('Treeview.Heading', background = [('selected', 'none')])
 
-    # test labels in each tab
-    schoolsLabel = ctk.CTkLabel(schoolsTab, text = 'schools', font = ctk.CTkFont('Roboto', 40))
-    classLabel = ctk.CTkLabel(classesTab, text = 'classes', font = ctk.CTkFont('Roboto', 40))
-    studentsLabel = ctk.CTkLabel(studentsTab, text = 'students', font = ctk.CTkFont('Roboto', 40))
-    
-    schoolsLabel.grid(row = 0, column = 0)
-    classLabel.grid(row = 0, column = 0)
-    studentsLabel.grid(row = 0, column = 0)
+    # table setup
+    table = ttk.Treeview(schoolsTab, columns = ('schoolId', 'schoolName'), show = 'headings')
+    table.heading('schoolId', text = 'School ID')
+    table.heading('schoolName', text = 'School Name')
+    table.tag_configure('gr', background = 'green')
+
+    table.insert(parent = '', index = 0, values = ('3', 'School 1 Test'))
+    table.insert(parent = '', index = 0, values = ('1', 'School 2 Test'))
+
+    table.grid(row = 0, column = 0, sticky = 'nsew')
 
     # rightPanel
     rightPanel = ctk.CTkFrame(dashboardWindow, height = 715, width = 300, corner_radius = cornerRadius)
     rightPanel.pack(padx = (0, 30), pady = (25, 0), side = 'right')
-
+    
     # right panel grid setup for buttons
     rightPanel.columnconfigure(0, weight = 1)
     rightPanel.rowconfigure(0, weight = 1)
@@ -132,7 +141,7 @@ def openDashboard(userRole):
     addItemButton = ctk.CTkButton(rightPanel, text = 'Add Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
     deleteItemButton = ctk.CTkButton(rightPanel, text = 'Delete Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
 
-    # grid setup for buttons
+    # placing all right paned buttons
     viewItemButton.grid(column = 0, row = 0)
     editItemButton.grid(column = 0, row = 1)
     addItemButton.grid(column = 0, row = 2)
