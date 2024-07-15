@@ -17,6 +17,7 @@ cornerRadius = 20
 
 def main():
     # initiate database connection
+    global databaseConn
     databaseConn = sqlConnection(connectionParameters)
     try:
         databaseConn.initiate()
@@ -68,28 +69,37 @@ def openDashboard(userRole):
     studentsTab.columnconfigure(0, weight = 1)
 
 
-    schoolTable = niceTable(schoolsTab, ('schoolName',), ('School Name',))
+    schoolsTable = niceTable(schoolsTab, ('schoolName',), ('School Name',))
     classTable = niceTable(classesTab, ('classId', 'level', 'schoolName'), ('Class ID', 'Level', 'School Name'))
     studentsTable = niceTable(studentsTab, ('email', 'fname', 'lname', 'grade'), ('Email', 'First Name', 'Last Name', 'Grade'))
 
 
 
-    schoolTable.grid(row = 0, column = 0, sticky = 'nsew')
+    schoolsTable.grid(row = 0, column = 0, sticky = 'nsew')
 
-    schoolTable.insert(parent = '', index = 0, values = ('School 1 Test',))
-    schoolTable.insert(parent = '', index = 0, values = ('School 2 Test',))
+    schoolsData = databaseConn.resultFromQuery('select name from schools;')
+    for schoolData in schoolsData:
+        schoolsTable.insert(parent = '', index = 0, values = schoolData)
 
     
     classTable.grid(row = 0, column = 0, sticky = 'nsew')
 
-    classTable.insert(parent = '', index = 0, values = ('Classes 1 Test',))
-    classTable.insert(parent = '', index = 0, values = ('Classes 2 Test',))
+    classesData = databaseConn.resultFromQuery('select * from classes;')
+    for classData in classesData:
+        classTable.insert(parent = '', index = 0, values = classData)
 
     
     studentsTable.grid(row = 0, column = 0, sticky = 'nsew')
 
-    studentsTable.insert(parent = '', index = 0, values = ('Students 1 Test',))
-    studentsTable.insert(parent = '', index = 0, values = ('Students 2 Test',))
+    studentsData = databaseConn.resultFromQuery('select * from students;')
+
+
+    for studentData in studentsData:
+        studentData = list(studentData)
+        studentData = studentData[1:6]
+        studentData[3] = str(studentData[3]) + studentData[4]
+        studentData.pop(4)
+        studentsTable.insert(parent = '', index = 0, values = studentData)
 
 
     # rightPanel
