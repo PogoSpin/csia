@@ -49,6 +49,7 @@ def clearSavedCredentials(storeDir: str):
         f.truncate(0)
 
 
+cornerRadius = 20
 
 def main():
     # initiate database connection
@@ -82,6 +83,60 @@ def openDashboard(userRole):
     dashboardWindow.geometry('1200x800')
     ctk.set_appearance_mode('dark')
     ctk.set_default_color_theme('blue')
+
+    # tabview
+    tabview = ctk.CTkTabview(dashboardWindow, width = 800, height = 740, anchor = 'w', corner_radius = cornerRadius)
+    tabview.pack(anchor = 'w', padx = 30, pady = 30, side = 'left')
+    tabview._segmented_button.configure(font = ctk.CTkFont('Roboto', 25))
+
+    schoolsTab = tabview.add('Schools')
+    classesTab = tabview.add('Classes')
+    studentsTab = tabview.add('Students')
+
+    # grid setup for test labels
+    schoolsTab.rowconfigure(0, weight = 1)
+    schoolsTab.columnconfigure(0, weight = 1)
+
+    classesTab.rowconfigure(0, weight = 1)
+    classesTab.columnconfigure(0, weight = 1)
+
+    studentsTab.rowconfigure(0, weight = 1)
+    studentsTab.columnconfigure(0, weight = 1)
+
+
+    # test labels in each tab
+    schoolsLabel = ctk.CTkLabel(schoolsTab, text = 'schools', font = ctk.CTkFont('Roboto', 40))
+    classLabel = ctk.CTkLabel(classesTab, text = 'classes', font = ctk.CTkFont('Roboto', 40))
+    studentsLabel = ctk.CTkLabel(studentsTab, text = 'students', font = ctk.CTkFont('Roboto', 40))
+    
+    schoolsLabel.grid(row = 0, column = 0)
+    classLabel.grid(row = 0, column = 0)
+    studentsLabel.grid(row = 0, column = 0)
+
+    # rightPanel
+    rightPanel = ctk.CTkFrame(dashboardWindow, height = 715, width = 300, corner_radius = cornerRadius)
+    rightPanel.pack(padx = (0, 30), pady = (25, 0), side = 'right')
+
+    # right panel grid setup for buttons
+    rightPanel.columnconfigure(0, weight = 1)
+    rightPanel.rowconfigure(0, weight = 1)
+    rightPanel.rowconfigure(1, weight = 1)
+    rightPanel.rowconfigure(2, weight = 1)
+    rightPanel.rowconfigure(3, weight = 1)
+
+    rightPanel.grid_propagate(False) # disable auto resizing
+
+    # rightPanel buttons
+    viewItemButton = ctk.CTkButton(rightPanel, text = 'View Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
+    editItemButton = ctk.CTkButton(rightPanel, text = 'Edit Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
+    addItemButton = ctk.CTkButton(rightPanel, text = 'Add Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
+    deleteItemButton = ctk.CTkButton(rightPanel, text = 'Delete Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
+
+    # grid setup for buttons
+    viewItemButton.grid(column = 0, row = 0)
+    editItemButton.grid(column = 0, row = 1)
+    addItemButton.grid(column = 0, row = 2)
+    deleteItemButton.grid(column = 0, row = 3)
 
     dashboardWindow.mainloop()
 
