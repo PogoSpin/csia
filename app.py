@@ -15,8 +15,9 @@ connectionParameters = {
 
 cornerRadius = 20
 
-def main():
-    # initiate database connection
+databaseConn = None
+
+def dbConnect():
     global databaseConn
     databaseConn = sqlConnection(connectionParameters)
     try:
@@ -25,6 +26,10 @@ def main():
         # show UI window of error 'failed to connect' to user
         print('failed database connection')
         raise e
+    
+def main():
+    # initiate database connection
+    dbConnect()
 
     # check saved credentials
     savedCredentials = readSavedCredentials(getCredentialsPath())
@@ -42,6 +47,9 @@ def main():
 
 # Dashboard
 def openDashboard(userRole):
+    if not databaseConn:
+        dbConnect()
+
     print(f'opening dashboard with role {userRole}')
     dashboardWindow = ctk.CTk()
     dashboardWindow.title('Class Management System Dashboard')
