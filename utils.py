@@ -38,7 +38,6 @@ def clearSavedCredentials(storeDir: str):
         f.truncate(0)
 
 
-
 def niceTable(master: any, columns: tuple | list, headings: tuple | list) -> ttk.Treeview:
     # table style
     style = ttk.Style()
@@ -54,3 +53,17 @@ def niceTable(master: any, columns: tuple | list, headings: tuple | list) -> ttk
 
     table.tag_configure('gr', background = 'green')
     return table
+
+def getTableDataSelected(table: ttk.Treeview) -> dict:
+    return table.item(table.focus())
+
+def itemSelected(table: ttk.Treeview) -> str | None:
+        selectedRow = getTableDataSelected(table)['values']
+        if type(selectedRow) != str:
+            return selectedRow[0]
+        else:
+            return None
+
+def clearTable(table: ttk.Treeview):
+    for item in table.get_children():
+        table.delete(item)
