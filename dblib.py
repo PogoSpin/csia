@@ -1,6 +1,6 @@
 from psycopg2 import connect
 
-class sqlConnection:
+class SqlConnection:
     def __init__(self, connectionParameters: dict):
         self.connectionParameters = connectionParameters
         self.connection = None

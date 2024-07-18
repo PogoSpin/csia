@@ -3,7 +3,7 @@ from dblib import *
 import app
 
 
-def verifySignIn(connection: sqlConnection, username: str, password: str) -> str:
+def verifySignIn(connection: SqlConnection, username: str, password: str) -> str:
     users = connection.resultFromQuery('select email, password from users;')
 
     for user in users:

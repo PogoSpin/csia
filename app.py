@@ -19,7 +19,7 @@ databaseConn = None
 
 def dbConnect():
     global databaseConn
-    databaseConn = sqlConnection(connectionParameters)
+    databaseConn = SqlConnection(connectionParameters)
     try:
         databaseConn.initiate()
     except Exception as e:
