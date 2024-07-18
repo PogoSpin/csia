@@ -57,6 +57,9 @@ def openDashboard(userRole):
     ctk.set_appearance_mode('dark')
     ctk.set_default_color_theme('blue')
 
+
+
+
     # tabview
     tabview = ctk.CTkTabview(dashboardWindow, width = 800, height = 740, anchor = 'w', corner_radius = cornerRadius)
     tabview.pack(anchor = 'w', padx = 30, pady = 30, side = 'left')
@@ -65,6 +68,9 @@ def openDashboard(userRole):
     schoolsTab = tabview.add('Schools')
     classesTab = tabview.add('Classes')
     studentsTab = tabview.add('Students')
+
+
+
 
     # grid setup for tables
     schoolsTab.rowconfigure(0, weight = 1)
@@ -76,14 +82,14 @@ def openDashboard(userRole):
     studentsTab.rowconfigure(0, weight = 1)
     studentsTab.columnconfigure(0, weight = 1)
 
-
+    # schools table load data
     def loadToSchoolsTable():
         schoolsData = databaseConn.resultFromQuery('select name from schools;')
         for schoolData in schoolsData:
             schoolsTable.insert(parent = '', index = 0, values = schoolData)
 
-    # classes table
-    def loadToClassesTable(filter = None):   # FYI filter is built in class; might cause issues
+    # classes table load data
+    def loadToClassesTable(filter: str = None):   # FYI filter is built in class; might cause issues
         if filter:
             schoolId = databaseConn.resultFromQuery(f"select id from schools where name = '{filter}'")[0][0]
             classesData = databaseConn.resultFromQuery(f"select * from classes where schoolid = '{schoolId}';")
@@ -93,8 +99,8 @@ def openDashboard(userRole):
         for classData in classesData:
             classesTable.insert(parent = '', index = 0, values = classData)
 
-    # student table
-    def loadToStudentsTable(filter = None):   # FYI filter is built in class; might cause issues
+    # student table load data
+    def loadToStudentsTable(filter: str = None):   # FYI filter is built in class; might cause issues
         if filter:
             studentsData = databaseConn.resultFromQuery(f"select * from students where classid = '{filter}';")
         else:
@@ -108,11 +114,12 @@ def openDashboard(userRole):
             studentData.pop(4)
             studentsTable.insert(parent = '', index = 0, values = studentData)
     
-
+    # create tables
     schoolsTable = niceTable(schoolsTab, ('schoolName',), ('School Name',))
     classesTable = niceTable(classesTab, ('classId', 'level', 'schoolName'), ('Class ID', 'Level', 'School Name'))
     studentsTable = niceTable(studentsTab, ('email', 'fname', 'lname', 'grade'), ('Email', 'First Name', 'Last Name', 'Grade'))
 
+    # vars for currently selected school/class/student
     selectedSchool = None
     selectedClass = None
     selectedStudent = None
@@ -150,7 +157,10 @@ def openDashboard(userRole):
     loadToClassesTable()
     loadToStudentsTable()
 
-    # rightPanel
+
+
+
+    # right panel
     rightPanel = ctk.CTkFrame(dashboardWindow, height = 715, width = 300, corner_radius = cornerRadius)
     rightPanel.pack(padx = (0, 30), pady = (25, 0), side = 'right')
     
@@ -161,8 +171,8 @@ def openDashboard(userRole):
     rightPanel.rowconfigure(2, weight = 1)
     rightPanel.rowconfigure(3, weight = 1)
     
-
     rightPanel.grid_propagate(False) # disable auto resizing
+
 
     # rightPanel buttons
     viewItemButton = ctk.CTkButton(rightPanel, text = 'View Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
