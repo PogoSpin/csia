@@ -147,6 +147,9 @@ def openDashboard(userRole):
     classesTable.bind('<ButtonRelease-1>', setSelectedClass)
     studentsTable.bind('<ButtonRelease-1>', setSelectedStudent)
 
+    schoolsTable.bind('<Double-Button-1>', lambda e: tabview.set('Classes'))
+    classesTable.bind('<Double-Button-1>', lambda e: tabview.set('Students'))
+
     # place tables
     schoolsTable.grid(row = 0, column = 0, sticky = 'nsew')
     classesTable.grid(row = 0, column = 0, sticky = 'nsew')
