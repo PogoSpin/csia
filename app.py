@@ -77,38 +77,78 @@ def openDashboard(userRole):
     studentsTab.columnconfigure(0, weight = 1)
 
 
+    def loadToSchoolsTable():
+        schoolsData = databaseConn.resultFromQuery('select name from schools;')
+        for schoolData in schoolsData:
+            schoolsTable.insert(parent = '', index = 0, values = schoolData)
+
+    # classes table
+    def loadToClassesTable(filter = None):   # FYI filter is built in class; might cause issues
+        if filter:
+            schoolId = databaseConn.resultFromQuery(f"select id from schools where name = '{filter}'")[0][0]
+            classesData = databaseConn.resultFromQuery(f"select * from classes where schoolid = '{schoolId}';")
+        else:
+            classesData = databaseConn.resultFromQuery('select * from classes;')
+
+        for classData in classesData:
+            classesTable.insert(parent = '', index = 0, values = classData)
+
+    # student table
+    def loadToStudentsTable(filter = None):   # FYI filter is built in class; might cause issues
+        if filter:
+            studentsData = databaseConn.resultFromQuery(f"select * from students where classid = '{filter}';")
+        else:
+            studentsData = databaseConn.resultFromQuery('select * from students;')
+
+        for studentData in studentsData:
+            studentData = list(studentData) 
+        
+            studentData = studentData[1:6]
+            studentData[3] = str(studentData[3]) + studentData[4]
+            studentData.pop(4)
+            studentsTable.insert(parent = '', index = 0, values = studentData)
+    
+
     schoolsTable = niceTable(schoolsTab, ('schoolName',), ('School Name',))
-    classTable = niceTable(classesTab, ('classId', 'level', 'schoolName'), ('Class ID', 'Level', 'School Name'))
+    classesTable = niceTable(classesTab, ('classId', 'level', 'schoolName'), ('Class ID', 'Level', 'School Name'))
     studentsTable = niceTable(studentsTab, ('email', 'fname', 'lname', 'grade'), ('Email', 'First Name', 'Last Name', 'Grade'))
 
+    selectedSchool = None
+    selectedClass = None
+    selectedStudent = None
 
+    def setSelectedSchool(event):
+        global selectedSchool
+        selectedSchool = itemSelected(schoolsTable)
+        clearTable(classesTable)
+        loadToClassesTable(selectedSchool)
+        clearTable(studentsTable)
+        loadToStudentsTable()
 
+    def setSelectedClass(event):
+        global selectedClass
+        selectedClass = itemSelected(classesTable)
+        clearTable(studentsTable)
+        loadToStudentsTable(selectedClass)
+
+    def setSelectedStudent(event):
+        global selectedStudent
+        selectedStudent = itemSelected(studentsTable)
+
+    # bindings to refresh tables when new selection
+    schoolsTable.bind('<ButtonRelease-1>', setSelectedSchool)
+    classesTable.bind('<ButtonRelease-1>', setSelectedClass)
+    studentsTable.bind('<ButtonRelease-1>', setSelectedStudent)
+
+    # place tables
     schoolsTable.grid(row = 0, column = 0, sticky = 'nsew')
-
-    schoolsData = databaseConn.resultFromQuery('select name from schools;')
-    for schoolData in schoolsData:
-        schoolsTable.insert(parent = '', index = 0, values = schoolData)
-
-    
-    classTable.grid(row = 0, column = 0, sticky = 'nsew')
-
-    classesData = databaseConn.resultFromQuery('select * from classes;')
-    for classData in classesData:
-        classTable.insert(parent = '', index = 0, values = classData)
-
-    
+    classesTable.grid(row = 0, column = 0, sticky = 'nsew')
     studentsTable.grid(row = 0, column = 0, sticky = 'nsew')
 
-    studentsData = databaseConn.resultFromQuery('select * from students;')
-
-
-    for studentData in studentsData:
-        studentData = list(studentData)
-        studentData = studentData[1:6]
-        studentData[3] = str(studentData[3]) + studentData[4]
-        studentData.pop(4)
-        studentsTable.insert(parent = '', index = 0, values = studentData)
-
+    # load initial / all data to tables, since none are selected
+    loadToSchoolsTable()
+    loadToClassesTable()
+    loadToStudentsTable()
 
     # rightPanel
     rightPanel = ctk.CTkFrame(dashboardWindow, height = 715, width = 300, corner_radius = cornerRadius)
@@ -120,6 +160,7 @@ def openDashboard(userRole):
     rightPanel.rowconfigure(1, weight = 1)
     rightPanel.rowconfigure(2, weight = 1)
     rightPanel.rowconfigure(3, weight = 1)
+    
 
     rightPanel.grid_propagate(False) # disable auto resizing
 
