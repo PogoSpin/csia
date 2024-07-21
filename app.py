@@ -45,6 +45,41 @@ def main():
     else:
         openSignInWindow(databaseConn)
 
+
+# vars for currently selected school/class/student
+selectedSchool = None
+selectedClass = None
+selectedStudent = None
+
+
+class PopupWindow(ctk.CTkToplevel):
+    def __init__(self, master, title = 'Popup', width = 500, height = 400):
+        super().__init__(master)
+        self.geometry(f'{width}x{height}')
+        self.title(title)
+        self.attributes('-topmost', True)
+        self.protocol('WM_DELETE_WINDOW', self.close)
+
+    def close(self):
+        self.destroy()
+
+class ConfirmationPopup(PopupWindow):
+    def __init__(self, master, message, confirmedFunc, width = 300, height = 200):
+        super().__init__(master, title = 'Confirmation', width = width, height = height)
+        
+        self.message = message
+        self.confirmedFunc = confirmedFunc
+        
+        self.message_label = ctk.CTkLabel(self, text = message, font = ctk.CTkFont('Roboto', 20), wraplength = 300, justify='center')
+        self.message_label.pack(pady = 20)
+        
+        self.back_button = ctk.CTkButton(self, text = 'OK', command = self.close, font = ctk.CTkFont('Roboto', 15))
+        self.back_button.pack(pady = 20)
+
+    def userConfirmed(self):
+        self.close()
+        self.confirmedFunc()
+
 # Dashboard
 def openDashboard(userRole):
     if not databaseConn:
@@ -119,23 +154,21 @@ def openDashboard(userRole):
     classesTable = niceTable(classesTab, ('classId', 'level', 'schoolName'), ('Class ID', 'Level', 'School Name'))
     studentsTable = niceTable(studentsTab, ('email', 'fname', 'lname', 'grade'), ('Email', 'First Name', 'Last Name', 'Grade'))
 
-    # vars for currently selected school/class/student
-    selectedSchool = None
-    selectedClass = None
-    selectedStudent = None
 
     def setSelectedSchool(event):
         global selectedSchool
         selectedSchool = itemSelected(schoolsTable)
-        clearTable(classesTable)
+
+        clearTable(classesTable)   # refresh classes table with this filter
         loadToClassesTable(selectedSchool)
-        clearTable(studentsTable)
+        clearTable(studentsTable)  # refresh students table with no filter
         loadToStudentsTable()
 
     def setSelectedClass(event):
         global selectedClass
         selectedClass = itemSelected(classesTable)
-        clearTable(studentsTable)
+
+        clearTable(studentsTable)  # refresh students table with this filter
         loadToStudentsTable(selectedClass)
 
     def setSelectedStudent(event):
@@ -147,6 +180,7 @@ def openDashboard(userRole):
     classesTable.bind('<ButtonRelease-1>', setSelectedClass)
     studentsTable.bind('<ButtonRelease-1>', setSelectedStudent)
 
+    # double click item to go straight to next tab
     schoolsTable.bind('<Double-Button-1>', lambda e: tabview.set('Classes'))
     classesTable.bind('<Double-Button-1>', lambda e: tabview.set('Students'))
 
@@ -176,12 +210,23 @@ def openDashboard(userRole):
     
     rightPanel.grid_propagate(False) # disable auto resizing
 
+    def currentItemSelected(): # current item selected on all tables, ie: the item selected in current table user is in
+        currentTab = tabview.get()
+        if currentTab == 'Schools':
+            return selectedSchool
+        elif currentTab == 'Classes':
+            return selectedClass
+        elif currentTab == 'Students':
+            return selectedStudent
+
+    def test():
+        warning = ConfirmationPopup(dashboardWindow, f'Are you sure you want to delete {currentItemSelected()}?', lambda: None)
 
     # rightPanel buttons
     viewItemButton = ctk.CTkButton(rightPanel, text = 'View Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
     editItemButton = ctk.CTkButton(rightPanel, text = 'Edit Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
     addItemButton = ctk.CTkButton(rightPanel, text = 'Add Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
-    deleteItemButton = ctk.CTkButton(rightPanel, text = 'Delete Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
+    deleteItemButton = ctk.CTkButton(rightPanel, text = 'Delete Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius, command = test)
 
     # placing all right paned buttons
     viewItemButton.grid(column = 0, row = 0)
