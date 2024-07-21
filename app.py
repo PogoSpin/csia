@@ -73,7 +73,7 @@ class ConfirmationPopup(PopupWindow):
         self.message_label = ctk.CTkLabel(self, text = message, font = ctk.CTkFont('Roboto', 20), wraplength = 300, justify='center')
         self.message_label.pack(pady = 20)
         
-        self.back_button = ctk.CTkButton(self, text = 'OK', command = self.close, font = ctk.CTkFont('Roboto', 15))
+        self.back_button = ctk.CTkButton(self, text = 'OK', font = ctk.CTkFont('Roboto', 15), command = self.userConfirmed)
         self.back_button.pack(pady = 20)
 
     def userConfirmed(self):
@@ -218,15 +218,24 @@ def openDashboard(userRole):
             return selectedClass
         elif currentTab == 'Students':
             return selectedStudent
-
-    def test():
-        warning = ConfirmationPopup(dashboardWindow, f'Are you sure you want to delete {currentItemSelected()}?', lambda: None)
+        
+    def currentTabSelected():
+        currentTab = tabview.get()
+        if currentTab == 'Schools':
+            return schoolsTable
+        elif currentTab == 'Classes':
+            return classesTable
+        elif currentTab == 'Students':
+            return studentsTable
+        
+    def removeItem():
+        warning = ConfirmationPopup(dashboardWindow, f'Are you sure you want to delete {currentItemSelected()}?', lambda: currentTabSelected().delete(currentTabSelected().selection()))
 
     # rightPanel buttons
     viewItemButton = ctk.CTkButton(rightPanel, text = 'View Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
     editItemButton = ctk.CTkButton(rightPanel, text = 'Edit Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
     addItemButton = ctk.CTkButton(rightPanel, text = 'Add Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
-    deleteItemButton = ctk.CTkButton(rightPanel, text = 'Delete Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius, command = test)
+    deleteItemButton = ctk.CTkButton(rightPanel, text = 'Delete Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius, command = removeItem)
 
     # placing all right paned buttons
     viewItemButton.grid(column = 0, row = 0)
