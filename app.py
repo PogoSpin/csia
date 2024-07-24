@@ -210,7 +210,7 @@ def openDashboard(userRole):
     
     rightPanel.grid_propagate(False) # disable auto resizing
 
-    def currentItemSelected(): # current item selected on all tables, ie: the item selected in current table user is in
+    def currentTabNameSelected(): # current item selected on all tables, ie: the item selected in current table user is in
         currentTab = tabview.get()
         if currentTab == 'Schools':
             return selectedSchool
@@ -227,15 +227,43 @@ def openDashboard(userRole):
             return classesTable
         elif currentTab == 'Students':
             return studentsTable
-        
+
     def removeItem():
-        warning = ConfirmationPopup(dashboardWindow, f'Are you sure you want to delete {currentItemSelected()}?', lambda: currentTabSelected().delete(currentTabSelected().selection()))
+        currentTab = currentTabSelected()
+        if currentTab == studentsTable:
+            databaseConn.execQuery(f"delete from students where email = '{selectedStudent}';")
+
+        elif currentTab == classesTable:
+            for emailTuple in databaseConn.resultFromQuery(f"select email from students where classid = '{selectedClass}';"):
+                email = emailTuple[0]
+                # studentsTable.delete(findRowID(studentsTable, email))
+                databaseConn.execQuery(f"delete from students where email = '{email}';")
+            databaseConn.execQuery(f"delete from classes where id = '{selectedClass}';")
+
+        elif currentTab == schoolsTable:
+            selectedSchoolID = databaseConn.resultFromQuery(f"select id from schools where name = '{selectedSchool}';")[0][0]
+            for classIdTuple in databaseConn.resultFromQuery(f"select id from classes where schoolID = '{selectedSchoolID}';"):
+                classId = classIdTuple[0]
+                for emailTuple in databaseConn.resultFromQuery(f"select email from students where classid = '{classId}';"):
+                    email = emailTuple[0]
+                    databaseConn.execQuery(f"delete from students where email = '{email}';")
+                databaseConn.execQuery(f"delete from classes where id = '{classId}';")
+            databaseConn.execQuery(f"delete from schools where name = '{selectedSchool}';")
+        
+        currentTab.delete(currentTab.selection())
+
+    
+    def removeItemButtonAction():
+        # warning = ConfirmationPopup(dashboardWindow, f'Are you sure you want to delete {currentItemSelected()}?', removeItem)
+        warning = ConfirmationPopup(dashboardWindow, f'Are you sure you want to delete {currentTabNameSelected()}?', removeItem)
+
+
 
     # rightPanel buttons
     viewItemButton = ctk.CTkButton(rightPanel, text = 'View Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
     editItemButton = ctk.CTkButton(rightPanel, text = 'Edit Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
     addItemButton = ctk.CTkButton(rightPanel, text = 'Add Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
-    deleteItemButton = ctk.CTkButton(rightPanel, text = 'Delete Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius, command = removeItem)
+    deleteItemButton = ctk.CTkButton(rightPanel, text = 'Delete Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius, command = removeItemButtonAction)
 
     # placing all right paned buttons
     viewItemButton.grid(column = 0, row = 0)
