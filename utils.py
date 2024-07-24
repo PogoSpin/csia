@@ -67,3 +67,10 @@ def itemSelected(table: ttk.Treeview) -> str | None:
 def clearTable(table: ttk.Treeview):
     for item in table.get_children():
         table.delete(item)
+
+
+def findRowID(treeview: ttk.Treeview, value: str) -> str | None:   # finds table row ID with text of first column
+    for itemId in treeview.get_children():
+        if treeview.item(treeview.selection())['values'][0] == value:
+            return itemId
+    return None
