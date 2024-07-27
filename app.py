@@ -210,7 +210,7 @@ def openDashboard(userRole):
     
     rightPanel.grid_propagate(False) # disable auto resizing
 
-    def currentTabNameSelected() -> str: # current item selected on all tables, ie: the item selected in current table user is in
+    def currentRowSelected() -> str: # current item selected on all tables, ie: the item selected in current table user is in
         currentTab = tabview.get()
         if currentTab == 'Schools':
             return selectedSchool
@@ -270,7 +270,7 @@ def openDashboard(userRole):
     
     def removeItemButtonAction():
         # warning = ConfirmationPopup(dashboardWindow, f'Are you sure you want to delete {currentItemSelected()}?', removeItem)
-        warning = ConfirmationPopup(dashboardWindow, f'Are you sure you want to delete {currentTabNameSelected()}?', removeItem)
+        warning = ConfirmationPopup(dashboardWindow, f'Are you sure you want to delete {currentRowSelected()}?', removeItem)
 
 
 
