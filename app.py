@@ -3,14 +3,7 @@ from tkinter import ttk
 from signIn import *
 from dblib import *
 from utils import *
-
-connectionParameters = {
-    'dbname': 'dlclassmanagement',
-    'user': 'postgres',
-    'password': 'XXXX',
-    'host': 'localhost',
-    'port': '5432'
-}
+from connectionParams import *
 
 
 cornerRadius = 20
