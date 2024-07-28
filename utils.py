@@ -1,5 +1,6 @@
 import os
 from tkinter import ttk
+from customtkinter import CTkFont
 
 def getCredentialsPath() -> str:
     if os.name == 'nt':  # for windows
@@ -74,3 +75,6 @@ def findRowID(treeview: ttk.Treeview, value: str) -> str | None:   # finds table
         if treeview.item(treeview.selection())['values'][0] == value:
             return itemId
     return None
+
+def font(size):
+    return CTkFont('Roboto', size)
