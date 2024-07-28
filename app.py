@@ -81,10 +81,10 @@ class AddItemPopup(PopupWindow):
         self.tables = tables
 
         self.currentName = ctk.StringVar()
-        self.currentName.trace_add('write', self.update_button_text)
+        self.currentNameTrace = self.currentName.trace_add('write', self.update_button_text)
 
         if addTableName == 'Schools':
-            self.message_label = ctk.CTkLabel(self, text = 'Add School', font = font(40), wraplength = 300, justify = 'center')
+            self.message_label = ctk.CTkLabel(self, text = 'Add School', font = font(40), wraplength = 300, justify = 'center') 
             self.message_label.pack(pady = 40)
 
             self.nameLabel = ctk.CTkLabel(self, text = 'School Name', font = font(20), wraplength = 300, justify = 'center')
@@ -97,24 +97,26 @@ class AddItemPopup(PopupWindow):
             self.confirmButton.pack(pady = 20, padx = 75)
 
         elif addTableName == 'Classes':
-            # self.message_label = ctk.CTkLabel(self, text = 'Add School', font = font(40), wraplength = 300, justify = 'center')
-            # self.message_label.pack(pady = 40)
+            # self.currentName.trace_remove('write', self.currentNameTrace)
 
-            # self.nameLabel = ctk.CTkLabel(self, text = 'School Name', font = font(20), wraplength = 300, justify = 'center')
-            # self.nameLabel.pack(pady = 10)
+            self.message_label = ctk.CTkLabel(self, text = 'Add Class', font = font(40), wraplength = 300, justify = 'center')
+            self.message_label.pack(pady = 40)
 
-            # self.nameEntry = ctk.CTkEntry(self, textvariable = self.currentName, width = 350, height = 50, font = font(20))
-            # self.nameEntry.pack(padx = 20)
+            self.classLevelLabel = ctk.CTkLabel(self, text = 'Class Level', font = font(20), wraplength = 300, justify = 'center')
+            self.classLevelLabel.pack(pady = 10)
 
-            # self.confirmButton = ctk.CTkButton(self, text = 'Add School', font = font(20), width = 350, height = 50, command = self.schoolConfirmAction)
-            # self.confirmButton.pack(pady = 20, padx = 75)
-            pass
+            self.classLevelOption = ctk.CTkOptionMenu(self, width = 350, height = 50, font = font(20), values = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])
+            self.classLevelOption.pack(padx = 20)
+
+            self.confirmButton = ctk.CTkButton(self, text = 'Add Class', font = font(20), width = 350, height = 50, command = self.classConfirmAction)
+            self.confirmButton.pack(pady = 20, padx = 75)
+
         else:
             # self.message_label = ctk.CTkLabel(self, text = 'Add Student', font = font(30), wraplength = 300, justify = 'center')
             # self.message_label.pack(pady = 40)
 
             # self.fnameEntry = ctk.CTkEntry(self, placeholder_text = 'First Name')
-            # self.fnameEntry.pack(side = 'left', padx = 20)
+            # self.fnameEntry.pack(sid = 'left', padx = 20)
 
             # self.lnameEntry = ctk.CTkEntry(self, placeholder_text = 'Last Name')
             # self.lnameEntry.pack(side = 'left',)
@@ -128,8 +130,12 @@ class AddItemPopup(PopupWindow):
         self.close()
 
     def classConfirmAction(self):
-        pass
-        
+        newClassLevel = self.classLevelOption.get()
+        parentSchoolId = self.conn.resultFromQuery(f"select id from schools where name = '{selectedSchool}'")[0][0]
+        self.conn.execQuery(f"insert into classes (level, schoolid) values ('{newClassLevel}', {parentSchoolId});")
+        self.tables[1].insert(parent = '', index = 0, values = (self.conn.resultFromQuery('select max(id) from classes;'), newClassLevel, selectedSchool))
+        self.close()
+
 
     def update_button_text(self, *args):
         new_text = f"Add {self.currentName.get()}"
@@ -180,11 +186,15 @@ def openDashboard(userRole):
 
     # classes table load data
     def loadToClassesTable(filter: str = None):   # FYI filter is built in class; might cause issues
+        # this next query basicaly selects * from classes but shows the last column as the school name instead of id
+        chatGptWizardryQuery = 'SELECT c.id, c.level, s.name AS school_name FROM classes c INNER JOIN schools s ON c.schoolid = s.id'
+
         if filter:
+
             schoolId = databaseConn.resultFromQuery(f"select id from schools where name = '{filter}'")[0][0]
-            classesData = databaseConn.resultFromQuery(f"select * from classes where schoolid = '{schoolId}';")
+            classesData = databaseConn.resultFromQuery(f"{chatGptWizardryQuery} where schoolid = '{schoolId}';")
         else:
-            classesData = databaseConn.resultFromQuery('select * from classes;')
+            classesData = databaseConn.resultFromQuery(f'{chatGptWizardryQuery};')
 
         for classData in classesData:
             classesTable.insert(parent = '', index = 0, values = classData)
