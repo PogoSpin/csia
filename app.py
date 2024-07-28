@@ -70,15 +70,77 @@ class ConfirmationPopup(PopupWindow):
         self.message = message
         self.confirmedFunc = confirmedFunc
         
-        self.message_label = ctk.CTkLabel(self, text = message, font = ctk.CTkFont('Roboto', 20), wraplength = 300, justify='center')
-        self.message_label.pack(pady = 20)
+        self.message_label = ctk.CTkLabel(self, text = message, font = font(20), wraplength = 300, justify = 'center')
+        self.message_label.pack(pady = 40)
         
-        self.back_button = ctk.CTkButton(self, text = 'OK', font = ctk.CTkFont('Roboto', 15), command = self.userConfirmed)
+        self.back_button = ctk.CTkButton(self, text = 'Yes', font = font(20), command = self.userConfirmed, width = 200, height = 50)
         self.back_button.pack(pady = 20)
 
     def userConfirmed(self):
         self.confirmedFunc()
         self.close()
+
+class AddItemPopup(PopupWindow):
+    def __init__(self, master: ctk.CTk, addTableName: str, conn: SqlConnection, tables: tuple[ttk.Treeview, ttk.Treeview, ttk.Treeview]):
+        super().__init__(master, f'Add {addTableName}')
+
+        self.conn = conn
+        self.tables = tables
+
+        self.currentName = ctk.StringVar()
+        self.currentName.trace_add('write', self.update_button_text)
+
+        if addTableName == 'Schools':
+            self.message_label = ctk.CTkLabel(self, text = 'Add School', font = font(40), wraplength = 300, justify = 'center')
+            self.message_label.pack(pady = 40)
+
+            self.nameLabel = ctk.CTkLabel(self, text = 'School Name', font = font(20), wraplength = 300, justify = 'center')
+            self.nameLabel.pack(pady = 10)
+
+            self.nameEntry = ctk.CTkEntry(self, textvariable = self.currentName, width = 350, height = 50, font = font(20))
+            self.nameEntry.pack(padx = 20)
+
+            self.confirmButton = ctk.CTkButton(self, text = 'Add School', font = font(20), width = 350, height = 50, command = self.schoolConfirmAction)
+            self.confirmButton.pack(pady = 20, padx = 75)
+
+        elif addTableName == 'Classes':
+            # self.message_label = ctk.CTkLabel(self, text = 'Add School', font = font(40), wraplength = 300, justify = 'center')
+            # self.message_label.pack(pady = 40)
+
+            # self.nameLabel = ctk.CTkLabel(self, text = 'School Name', font = font(20), wraplength = 300, justify = 'center')
+            # self.nameLabel.pack(pady = 10)
+
+            # self.nameEntry = ctk.CTkEntry(self, textvariable = self.currentName, width = 350, height = 50, font = font(20))
+            # self.nameEntry.pack(padx = 20)
+
+            # self.confirmButton = ctk.CTkButton(self, text = 'Add School', font = font(20), width = 350, height = 50, command = self.schoolConfirmAction)
+            # self.confirmButton.pack(pady = 20, padx = 75)
+            pass
+        else:
+            # self.message_label = ctk.CTkLabel(self, text = 'Add Student', font = font(30), wraplength = 300, justify = 'center')
+            # self.message_label.pack(pady = 40)
+
+            # self.fnameEntry = ctk.CTkEntry(self, placeholder_text = 'First Name')
+            # self.fnameEntry.pack(side = 'left', padx = 20)
+
+            # self.lnameEntry = ctk.CTkEntry(self, placeholder_text = 'Last Name')
+            # self.lnameEntry.pack(side = 'left',)
+            pass
+
+
+    def schoolConfirmAction(self):
+        newSchoolName = self.currentName.get()
+        self.conn.execQuery(f"insert into schools (name) values ('{newSchoolName}');")
+        self.tables[0].insert(parent = '', index = 0, values = (newSchoolName, ))
+        self.close()
+
+    def classConfirmAction(self):
+        pass
+        
+
+    def update_button_text(self, *args):
+        new_text = f"Add {self.currentName.get()}"
+        self.confirmButton.configure(text = new_text)
 
 # Dashboard
 def openDashboard(userRole):
@@ -98,7 +160,7 @@ def openDashboard(userRole):
     # tabview
     tabview = ctk.CTkTabview(dashboardWindow, width = 800, height = 740, anchor = 'w', corner_radius = cornerRadius)
     tabview.pack(anchor = 'w', padx = 30, pady = 30, side = 'left')
-    tabview._segmented_button.configure(font = ctk.CTkFont('Roboto', 25))
+    tabview._segmented_button.configure(font = font(25))
 
     schoolsTab = tabview.add('Schools')
     classesTab = tabview.add('Classes')
@@ -269,16 +331,18 @@ def openDashboard(userRole):
 
     
     def removeItemButtonAction():
-        # warning = ConfirmationPopup(dashboardWindow, f'Are you sure you want to delete {currentItemSelected()}?', removeItem)
-        warning = ConfirmationPopup(dashboardWindow, f'Are you sure you want to delete {currentRowSelected()}?', removeItem)
+        if currentRowSelected():
+            warningWindow = ConfirmationPopup(dashboardWindow, f'Are you sure you want to delete {currentRowSelected()}?', removeItem)
 
+    def addItemButtonAction():
+        addItemWindow = AddItemPopup(dashboardWindow, tabview.get(), databaseConn, (schoolsTable, classesTable, studentsTable))
 
 
     # rightPanel buttons
-    viewItemButton = ctk.CTkButton(rightPanel, text = 'View Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
-    editItemButton = ctk.CTkButton(rightPanel, text = 'Edit Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
-    addItemButton = ctk.CTkButton(rightPanel, text = 'Add Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius)
-    deleteItemButton = ctk.CTkButton(rightPanel, text = 'Delete Item', font = ctk.CTkFont('Roboto', 35), width = 250, height = 120, corner_radius = cornerRadius, command = removeItemButtonAction)
+    viewItemButton = ctk.CTkButton(rightPanel, text = 'View Item', font = font(35), width = 250, height = 120, corner_radius = cornerRadius)
+    editItemButton = ctk.CTkButton(rightPanel, text = 'Edit Item', font = font(35), width = 250, height = 120, corner_radius = cornerRadius)
+    addItemButton = ctk.CTkButton(rightPanel, text = 'Add Item', font = font(35), width = 250, height = 120, corner_radius = cornerRadius, command = addItemButtonAction)
+    deleteItemButton = ctk.CTkButton(rightPanel, text = 'Delete Item', font = font(35), width = 250, height = 120, corner_radius = cornerRadius, command = removeItemButtonAction)
 
     # placing all right paned buttons
     viewItemButton.grid(column = 0, row = 0)
