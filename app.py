@@ -112,15 +112,43 @@ class AddItemPopup(PopupWindow):
             self.confirmButton.pack(pady = 20, padx = 75)
 
         else:
-            # self.message_label = ctk.CTkLabel(self, text = 'Add Student', font = font(30), wraplength = 300, justify = 'center')
-            # self.message_label.pack(pady = 40)
+            self.columnconfigure(0, weight = 2)
+            self.rowconfigure(0, weight = 1)
+            self.rowconfigure(1, weight = 1)
+            self.rowconfigure(2, weight = 1)
+            self.rowconfigure(3, weight = 2)
 
-            # self.fnameEntry = ctk.CTkEntry(self, placeholder_text = 'First Name')
-            # self.fnameEntry.pack(sid = 'left', padx = 20)
+            self.message_label = ctk.CTkLabel(self, text = 'Add Student', font = font(40), wraplength = 300, justify = 'center')
+            self.message_label.grid(column = 0, row = 0, sticky = 'nsew', pady = (40, 0))
 
-            # self.lnameEntry = ctk.CTkEntry(self, placeholder_text = 'Last Name')
-            # self.lnameEntry.pack(side = 'left',)
-            pass
+            self.namesFrame = ctk.CTkFrame(self, fg_color = 'transparent')
+            self.emailGradeFrame = ctk.CTkFrame(self, fg_color = 'transparent')
+            self.namesFrame.grid(column = 0, row = 1, sticky = 'nsew', padx = 20, pady = 10)
+            self.emailGradeFrame.grid(column = 0, row = 2, sticky = 'nsew', padx = 20, pady = 10)
+
+            self.flnameLable = ctk.CTkLabel(self.namesFrame, text = 'First Name                                     Last Name', font = font(22))
+            self.flnameLable.pack(side = 'top', pady = 5)
+
+            self.fnameEntry = ctk.CTkEntry(self.namesFrame, textvariable = self.currentName, font = font(25), width = 200, height = 50)
+            self.fnameEntry.pack(side = 'left', padx = 10)
+
+            self.lnameEntry = ctk.CTkEntry(self.namesFrame, font = font(25), width = 250, height = 50)
+            self.lnameEntry.pack(side = 'right', padx = 10)
+
+
+            self.emailGradeLable = ctk.CTkLabel(self.emailGradeFrame, text = "Student's Email                                       Grade", font = font(22))
+            self.emailGradeLable.pack(side = 'top', pady = 5)
+
+            self.emailEntry =  ctk.CTkEntry(self.emailGradeFrame, font = font(25), width = 350, height = 50)
+            self.emailEntry.pack(side = 'left', padx = 10)
+
+            self.gradeEntry =  ctk.CTkEntry(self.emailGradeFrame, font = font(25), width = 100, height = 50)
+            self.gradeEntry.pack(side = 'right', padx = 10)
+
+
+            self.confirmButton = ctk.CTkButton(self, text = 'Add Student', font = font(20), width = 350, height = 50, command = self.studentConfirmAction)
+            self.confirmButton.grid(column = 0, row = 3, pady = 20)
+
 
 
     def schoolConfirmAction(self):
@@ -135,6 +163,9 @@ class AddItemPopup(PopupWindow):
         self.conn.execQuery(f"insert into classes (level, schoolid) values ('{newClassLevel}', {parentSchoolId});")
         self.tables[1].insert(parent = '', index = 0, values = (self.conn.resultFromQuery('select max(id) from classes;'), newClassLevel, selectedSchool))
         self.close()
+
+    def studentConfirmAction(self):
+        pass
 
 
     def update_button_text(self, *args):
