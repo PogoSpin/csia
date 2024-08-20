@@ -165,7 +165,19 @@ class AddItemPopup(PopupWindow):
         self.close()
 
     def studentConfirmAction(self):
-        pass
+        newStudentFName = self.fnameEntry.get()
+        newStudentLName = self.lnameEntry.get()
+        newStudentEmail = self.emailEntry.get()
+
+        newStudentGradeClass = self.gradeEntry.get()
+        newStudentGrade = int(''.join(filter(str.isdigit, newStudentGradeClass)))
+        newStudentClass = ''.join(filter(str.isalpha, newStudentGradeClass))
+
+        parentSchoolId = self.conn.resultFromQuery(f"select id from schools where name = '{selectedSchool}'")[0][0]
+        parentClassId = selectedClass
+        self.conn.execQuery(f"insert into students (email, fname, lname, grade, homeclass, schoolid, classid) values ('{newStudentEmail}', '{newStudentFName}', '{newStudentLName}', '{newStudentGrade}', '{newStudentClass}', '{parentSchoolId}', '{parentClassId}');")
+        self.tables[2].insert(parent = '', index = 0, values = (newStudentEmail, newStudentFName, newStudentLName, newStudentGradeClass))
+        self.close()
 
 
     def update_button_text(self, *args):
