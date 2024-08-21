@@ -1,5 +1,6 @@
 import os
 from tkinter import ttk
+from tkinter import CENTER, NO
 from customtkinter import CTkFont
 
 def getCredentialsPath() -> str:
@@ -38,14 +39,15 @@ def clearSavedCredentials(storeDir: str):
     with open(path, 'w') as f:
         f.truncate(0)
 
-
-def niceTable(master: any, columns: tuple | list, headings: tuple | list) -> ttk.Treeview:
+def confStyle(master, headingFontSize: int = 60, itemFontSize: int = 45):
     # table style
     style = ttk.Style()
     style.theme_use('default')
-    style.configure('Treeview.Heading', font = (None, 60), background = '#2B2B2B', foreground = '#DCE4EE', borderwidth = 0)
-    style.configure('Treeview', font = (None, 45), rowheight = 100, background = '#2B2B2B', foreground = '#DCE4EE', fieldbackground = '#2B2B2B', borderwidth = 0)
+    style.configure('Treeview.Heading', font = (None, headingFontSize), background = '#2B2B2B', foreground = '#DCE4EE', borderwidth = 0)
+    style.configure('Treeview', font = (None, itemFontSize), rowheight = 100, background = '#2B2B2B', foreground = '#DCE4EE', fieldbackground = '#2B2B2B', borderwidth = 0)
     style.map('Treeview.Heading', background = [('selected', 'none')])
+
+def niceTable(master: any, columns: tuple | list, headings: tuple | list) -> ttk.Treeview:
     # table setup
     table = ttk.Treeview(master, columns = columns, show = 'headings')
 

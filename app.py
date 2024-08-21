@@ -196,11 +196,17 @@ def openDashboard(userRole):
     ctk.set_appearance_mode('dark')
     ctk.set_default_color_theme('blue')
 
+    def changeStyleToTab(): # work around weird tab styling system
+        'sets different table style for students tab'
+        if tabview.get() == 'Students':
+            confStyle(dashboardWindow, 45, 30)
+        else:
+            confStyle(dashboardWindow)
 
 
 
     # tabview
-    tabview = ctk.CTkTabview(dashboardWindow, width = 800, height = 740, anchor = 'w', corner_radius = cornerRadius)
+    tabview = ctk.CTkTabview(dashboardWindow, width = 800, height = 740, anchor = 'w', corner_radius = cornerRadius, command = changeStyleToTab)
     tabview.pack(anchor = 'w', padx = 30, pady = 30, side = 'left')
     tabview._segmented_button.configure(font = font(25))
 
@@ -233,7 +239,6 @@ def openDashboard(userRole):
         chatGptWizardryQuery = 'SELECT c.id, c.level, s.name AS school_name FROM classes c INNER JOIN schools s ON c.schoolid = s.id'
 
         if filter:
-
             schoolId = databaseConn.resultFromQuery(f"select id from schools where name = '{filter}'")[0][0]
             classesData = databaseConn.resultFromQuery(f"{chatGptWizardryQuery} where schoolid = '{schoolId}';")
         else:
@@ -257,6 +262,8 @@ def openDashboard(userRole):
             studentData.pop(4)
             studentsTable.insert(parent = '', index = 0, values = studentData)
     
+    confStyle(dashboardWindow)
+
     # create tables
     schoolsTable = niceTable(schoolsTab, ('schoolName',), ('School Name',))
     classesTable = niceTable(classesTab, ('classId', 'level', 'schoolName'), ('Class ID', 'Level', 'School Name'))
@@ -336,7 +343,9 @@ def openDashboard(userRole):
         elif currentTab == 'Students':
             return studentsTable
 
-    def removeItem():  # removes item and all children
+    def removeItem():
+        'removes item and all children'
+
         currentTab = currentTabSelected()
 
         # if the student tab is selected u can just delete selected student
