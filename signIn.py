@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from utils import font
 from dblib import *
 import app
 
@@ -37,19 +38,19 @@ def openSignInWindow(databaseConnection):
     ctk.set_appearance_mode('dark')
     ctk.set_default_color_theme('blue')
 
-    signInLabel = ctk.CTkLabel(signInWindow, text = 'Sign In', font = ctk.CTkFont('Roboto', 60))
+    signInLabel = ctk.CTkLabel(signInWindow, text = 'Sign In', font = font(60))
     signInLabel.place(relx = 0.05, rely = 0.1)
 
-    emailInput = ctk.CTkEntry(signInWindow, placeholder_text = 'Email', width = 700, height = 40, font = ctk.CTkFont('Roboto', 20))
+    emailInput = ctk.CTkEntry(signInWindow, placeholder_text = 'Email', width = 700, height = 40, font = font(20))
     emailInput.place(relx = 0.05, rely = 0.4)
 
-    passwordInput = ctk.CTkEntry(signInWindow, placeholder_text = 'Password', width = 700, height = 40, show = '•', font = ctk.CTkFont('Roboto', 20))
+    passwordInput = ctk.CTkEntry(signInWindow, placeholder_text = 'Password', width = 700, height = 40, show = '•', font = font(20))
     passwordInput.place(relx = 0.05, rely = 0.465)
 
-    signInButton = ctk.CTkButton(signInWindow, text = 'Sign In', font = ctk.CTkFont('Roboto', 30), height = 50, width = 150, command = signInAction)
+    signInButton = ctk.CTkButton(signInWindow, text = 'Sign In', font = font(30), height = 50, width = 150, command = signInAction)
     signInButton.place(relx = 0.05, rely = 0.54)
 
-    rememberCredsCheckbox = ctk.CTkCheckBox(signInWindow, text = 'Remember me', font = ctk.CTkFont('Roboto', 17), checkbox_width = 32, checkbox_height = 32)
+    rememberCredsCheckbox = ctk.CTkCheckBox(signInWindow, text = 'Remember me', font = font(17), checkbox_width = 32, checkbox_height = 32)
     rememberCredsCheckbox.place(relx = 0.51, rely = 0.55)
     rememberCredsCheckbox.select()
 
