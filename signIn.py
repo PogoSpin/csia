@@ -2,6 +2,7 @@ import customtkinter as ctk
 from utils import font
 from dblib import *
 import app
+from time import sleep
 
 
 def verifySignIn(connection: SqlConnection, username: str, password: str) -> str:
@@ -28,7 +29,9 @@ def openSignInWindow(databaseConnection):
             app.openDashboard(role)
         else:
             # let user know of failed sign in
-            print('Incorrect password for sign-in')
+            incorrectDetailsLabel = ctk.CTkLabel(signInWindow, text = 'Incorrect email or password', font = font(20), text_color = '#eb4034')
+            incorrectDetailsLabel.place(relx = 0.05, rely = 0.35)
+            incorrectDetailsLabel.after(3000, incorrectDetailsLabel.destroy)
             
 
     signInWindow = ctk.CTk()
