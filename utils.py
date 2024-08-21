@@ -53,6 +53,8 @@ def niceTable(master: any, columns: tuple | list, headings: tuple | list) -> ttk
 
     for i in range(len(columns)):
         table.heading(columns[i], text = headings[i])
+    if columns[0] == 'email':
+        table.column(columns[0], anchor = CENTER, stretch = NO, width = 700)
 
     table.tag_configure('gr', background = 'green')
     return table
