@@ -196,8 +196,11 @@ def openDashboard(userRole):
     ctk.set_appearance_mode('dark')
     ctk.set_default_color_theme('blue')
 
-    def changeStyleToTab(): # work around weird tab styling system
+    def changeStyleToTab(event = None): # work around weird tab styling system
         'sets different table style for students tab'
+        if event:   # if coming from double click bind, also change the tab
+            tabview.set('Students')
+            
         if tabview.get() == 'Students':
             confStyle(dashboardWindow, 45, 30)
         else:
@@ -297,7 +300,7 @@ def openDashboard(userRole):
 
     # double click item to go straight to next tab
     schoolsTable.bind('<Double-Button-1>', lambda e: tabview.set('Classes'))
-    classesTable.bind('<Double-Button-1>', lambda e: tabview.set('Students'))
+    classesTable.bind('<Double-Button-1>', changeStyleToTab)
 
     # place tables
     schoolsTable.grid(row = 0, column = 0, sticky = 'nsew')
