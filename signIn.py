@@ -37,8 +37,8 @@ def openSignInWindow(databaseConnection):
     ctk.set_appearance_mode('dark')
     ctk.set_default_color_theme('blue')
 
-    signInText = ctk.CTkLabel(signInWindow, text = 'Sign In', font = ctk.CTkFont('Roboto', 60))
-    signInText.place(relx = 0.05, rely = 0.1)
+    signInLabel = ctk.CTkLabel(signInWindow, text = 'Sign In', font = ctk.CTkFont('Roboto', 60))
+    signInLabel.place(relx = 0.05, rely = 0.1)
 
     emailInput = ctk.CTkEntry(signInWindow, placeholder_text = 'Email', width = 700, height = 40, font = ctk.CTkFont('Roboto', 20))
     emailInput.place(relx = 0.05, rely = 0.4)
