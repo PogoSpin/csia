@@ -2,7 +2,6 @@ import customtkinter as ctk
 from utils import font
 from dblib import *
 import app
-from time import sleep
 
 
 def verifySignIn(connection: SqlConnection, username: str, password: str) -> str:
