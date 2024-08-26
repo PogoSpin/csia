@@ -210,7 +210,13 @@ def openDashboard(userRole):
         else:
             confStyle(dashboardWindow)
 
+    def signOut():
+        dashboardWindow.destroy()
+        clearSavedCredentials(getCredentialsPath())
+        main()
 
+    signOutButton = ctk.CTkButton(dashboardWindow, text = 'Sign Out', command = signOut, font = font(25), height = 38, width = 297)
+    signOutButton.place(relx = 0.726, rely = 0.01)
 
     # tabview
     tabview = ctk.CTkTabview(dashboardWindow, width = 800, height = 740, anchor = 'w', corner_radius = cornerRadius, command = changeStyleToTab)
