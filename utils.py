@@ -46,12 +46,10 @@ def readSavedCredentials(storeDir: str) -> list[str, str]:
 def writeSavedCredentials(storeDir: str, username: str, password: str):
     path = os.path.join(storeDir, 'credentials.dat')
 
-    hashedPassword = hashPassword(password).decode('utf-8')
-
     with open(path, 'w') as f:
         f.truncate(0)
         f.write(username + '\n')
-        f.write(hashedPassword)
+        f.write(password)
 
 def clearSavedCredentials(storeDir: str):    # not used
     path = os.path.join(storeDir, 'credentials.dat')
