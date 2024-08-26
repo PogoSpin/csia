@@ -48,8 +48,7 @@ def writeSavedCredentials(storeDir: str, username: str, password: str):
 
     with open(path, 'w') as f:
         f.truncate(0)
-        f.write(username + '\n')
-        f.write(password)
+        f.write(username + '\n' + password)
 
 def clearSavedCredentials(storeDir: str):    # not used
     path = os.path.join(storeDir, 'credentials.dat')
