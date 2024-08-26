@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from utils import font
+from utils import font, writeSavedCredentials, getCredentialsPath
 from dblib import *
 import app
 
@@ -22,7 +22,7 @@ def openSignInWindow(databaseConnection):
         role = verifySignIn(databaseConnection, typedEmail, typedPass)
         if role:
             if rememberCredsCheckbox.get() == 1:
-                app.writeSavedCredentials(app.getCredentialsPath(), typedEmail, typedPass)
+                writeSavedCredentials(getCredentialsPath(), typedEmail, typedPass)
 
             signInWindow.destroy()
             app.openDashboard(role)
