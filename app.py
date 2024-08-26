@@ -28,12 +28,16 @@ def main():
     savedCredentials = readSavedCredentials(getCredentialsPath())
 
     if savedCredentials: # if user has already signed in before and credentials are saved locally
-        role = verifySignIn(databaseConn, savedCredentials[0], savedCredentials[1])  # check that credentials are valid
-        if role:
-            openDashboard(role)
+        if savedCredentials != -1:
+            role = verifySignIn(databaseConn, savedCredentials[0], savedCredentials[1])  # check that credentials are valid
+            if role:
+                openDashboard(role)
+            else:
+                # tell user saved credentials didn't work and send to sign in page
+                print('Saved credentials arent valid, opening sign in page')
+                openSignInWindow(databaseConn)
         else:
-            # tell user saved credentials didn't work and send to sign in page
-            print('saved credentials didnt work, opening sign in page')
+            print('Unable to decrypt saved credentials, opening sign in page')
             openSignInWindow(databaseConn)
     else:
         openSignInWindow(databaseConn)

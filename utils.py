@@ -4,6 +4,9 @@ from tkinter import CENTER, NO
 from customtkinter import CTkFont
 from dblib import SqlConnection
 from bcrypt import hashpw, checkpw, gensalt
+from cryptography.fernet import Fernet
+
+localEncryptionKey = b'IN08AtGTPSYE8mqtyKqwPTQP0ihKxi9672iclN3qEE0='
 
 def verifySignIn(connection: SqlConnection, username: str, password: str) -> str:
     users = connection.resultFromQuery('select email, password from users;')
@@ -20,6 +23,18 @@ def hashPassword(password: str) -> str:
     bytePassword = password.encode('utf-8')
     salt = gensalt()
     return hashpw(bytePassword, salt)
+
+
+def encryptMessage(message: str, key: bytes) -> bytes:
+    fernet = Fernet(key)
+    encrypted_message = fernet.encrypt(message.encode('utf-8'))
+    return encrypted_message
+
+def decryptMessage(encrypted_message: bytes, key: bytes) -> str:
+    fernet = Fernet(key)
+    decrypted_message = fernet.decrypt(encrypted_message).decode('utf-8')
+    return decrypted_message
+
 
 def getCredentialsPath() -> str:
     if os.name == 'nt':  # for windows
@@ -38,8 +53,13 @@ def readSavedCredentials(storeDir: str) -> list[str, str]:
 
     if os.path.exists(path):
         with open(path, 'r') as f:
-            data = f.read().split('\n')
-        return data
+            try:
+                data = f.read().split('\n')
+                data[0] = decryptMessage(data[0], localEncryptionKey)
+                data[1] = decryptMessage(data[1], localEncryptionKey)
+                return data
+            except:
+                return -1
     else:
         return None
 
@@ -48,7 +68,9 @@ def writeSavedCredentials(storeDir: str, username: str, password: str):
 
     with open(path, 'w') as f:
         f.truncate(0)
-        f.write(username + '\n' + password)
+        encryptedUsername = encryptMessage(username, localEncryptionKey).decode('utf-8')
+        encryptedPassword = encryptMessage(password, localEncryptionKey).decode('utf-8')
+        f.write(encryptedUsername + '\n' + encryptedPassword)
 
 def clearSavedCredentials(storeDir: str):    # not used
     path = os.path.join(storeDir, 'credentials.dat')
