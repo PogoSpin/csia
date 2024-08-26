@@ -1,18 +1,7 @@
 import customtkinter as ctk
-from utils import font, writeSavedCredentials, getCredentialsPath
+from utils import font, writeSavedCredentials, getCredentialsPath, verifySignIn
 from dblib import *
 import app
-
-
-def verifySignIn(connection: SqlConnection, username: str, password: str) -> str:
-    users = connection.resultFromQuery('select email, password from users;')
-
-    for user in users:
-        if username == user[0] and password == user[1]:
-            role = connection.resultFromQuery(f"select role from users where email = '{user[0]}'")[0][0]
-            return role
-    else:
-        return None
     
 
 def openSignInWindow(databaseConnection):

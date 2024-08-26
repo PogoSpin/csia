@@ -2,6 +2,17 @@ import os
 from tkinter import ttk
 from tkinter import CENTER, NO
 from customtkinter import CTkFont
+from dblib import SqlConnection
+
+def verifySignIn(connection: SqlConnection, username: str, password: str) -> str:
+    users = connection.resultFromQuery('select email, password from users;')
+
+    for user in users:
+        if username == user[0] and password == user[1]:
+            role = connection.resultFromQuery(f"select role from users where email = '{user[0]}'")[0][0]
+            return role
+    else:
+        return None
 
 def getCredentialsPath() -> str:
     if os.name == 'nt':  # for windows
