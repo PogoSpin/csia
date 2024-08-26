@@ -3,16 +3,23 @@ from tkinter import ttk
 from tkinter import CENTER, NO
 from customtkinter import CTkFont
 from dblib import SqlConnection
+from bcrypt import hashpw, checkpw, gensalt
 
 def verifySignIn(connection: SqlConnection, username: str, password: str) -> str:
     users = connection.resultFromQuery('select email, password from users;')
 
     for user in users:
-        if username == user[0] and password == user[1]:
+        if username == user[0] and checkpw(password.encode('utf-8'), user[1].encode('utf-8')):
             role = connection.resultFromQuery(f"select role from users where email = '{user[0]}'")[0][0]
             return role
     else:
         return None
+
+def hashPassword(password: str) -> str:
+    'hashes plaintext passwd with new salt'
+    bytePassword = password.encode('utf-8')
+    salt = gensalt()
+    return hashpw(bytePassword, salt)
 
 def getCredentialsPath() -> str:
     if os.name == 'nt':  # for windows
@@ -39,12 +46,14 @@ def readSavedCredentials(storeDir: str) -> list[str, str]:
 def writeSavedCredentials(storeDir: str, username: str, password: str):
     path = os.path.join(storeDir, 'credentials.dat')
 
+    hashedPassword = hashPassword(password).decode('utf-8')
+
     with open(path, 'w') as f:
         f.truncate(0)
         f.write(username + '\n')
-        f.write(password)
+        f.write(hashedPassword)
 
-def clearSavedCredentials(storeDir: str):
+def clearSavedCredentials(storeDir: str):    # not used
     path = os.path.join(storeDir, 'credentials.dat')
 
     with open(path, 'w') as f:
