@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from tkinter import ttk
-from signIn import *
+# from signIn import *
 from dblib import *
 from utils import *
 from connectionParams import *
@@ -21,6 +21,7 @@ def dbConnect():
         raise e
     
 def main():
+    import signIn
     # initiate database connection
     dbConnect()
 
@@ -35,12 +36,12 @@ def main():
             else:
                 # tell user saved credentials didn't work and send to sign in page
                 print('Saved credentials arent valid, opening sign in page')
-                openSignInWindow(databaseConn)
+                signIn.openSignInWindow(databaseConn)
         else:
             print('Unable to decrypt saved credentials, opening sign in page')
-            openSignInWindow(databaseConn)
+            signIn.openSignInWindow(databaseConn)
     else:
-        openSignInWindow(databaseConn)
+        signIn.openSignInWindow(databaseConn)
 
 
 # vars for currently selected school/class/student
