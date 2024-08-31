@@ -71,8 +71,8 @@ class ConfirmationPopup(PopupWindow):
         self.messageLabel = ctk.CTkLabel(self, text = message, font = font(20), wraplength = 300, justify = 'center')
         self.messageLabel.pack(pady = 40)
         
-        self.backButton = ctk.CTkButton(self, text = 'Yes', font = font(20), command = self.userConfirmed, width = 200, height = 50)
-        self.backButton.pack(pady = 20)
+        self.confirmButton = ctk.CTkButton(self, text = 'Yes', font = font(20), command = self.userConfirmed, width = 200, height = 50)
+        self.confirmButton.pack(pady = 20)
 
     def userConfirmed(self):
         self.confirmedFunc()
