@@ -28,13 +28,13 @@ def hashPassword(password: str) -> str:
 
 def encryptMessage(message: str, key: bytes) -> bytes:
     fernet = Fernet(key)
-    encrypted_message = fernet.encrypt(message.encode('utf-8'))
-    return encrypted_message
+    encryptedMessage = fernet.encrypt(message.encode('utf-8'))
+    return encryptedMessage
 
-def decryptMessage(encrypted_message: bytes, key: bytes) -> str:
+def decryptMessage(encryptedMessage: bytes, key: bytes) -> str:
     fernet = Fernet(key)
-    decrypted_message = fernet.decrypt(encrypted_message).decode('utf-8')
-    return decrypted_message
+    decryptedMessage = fernet.decrypt(encryptedMessage).decode('utf-8')
+    return decryptedMessage
 
 
 def getCredentialsPath() -> str:
@@ -152,11 +152,11 @@ Otherwise, please use this code in the Class Management Program to reset your pa
         msg.set_content(body)
 
         # SMTP server configuration
-        smtp_server = 'smtp.gmail.com'
-        smtp_port = 587
+        smtpServer = 'smtp.gmail.com'
+        smtpPort = 587
 
         try:
-            with smtplib.SMTP(smtp_server, smtp_port) as server:
+            with smtplib.SMTP(smtpServer, smtpPort) as server:
                 server.starttls()  # Secure the connection
                 server.login(senderEmail, password)
                 server.send_message(msg)

@@ -68,11 +68,11 @@ class ConfirmationPopup(PopupWindow):
         self.message = message
         self.confirmedFunc = confirmedFunc
         
-        self.message_label = ctk.CTkLabel(self, text = message, font = font(20), wraplength = 300, justify = 'center')
-        self.message_label.pack(pady = 40)
+        self.messageLabel = ctk.CTkLabel(self, text = message, font = font(20), wraplength = 300, justify = 'center')
+        self.messageLabel.pack(pady = 40)
         
-        self.back_button = ctk.CTkButton(self, text = 'Yes', font = font(20), command = self.userConfirmed, width = 200, height = 50)
-        self.back_button.pack(pady = 20)
+        self.backButton = ctk.CTkButton(self, text = 'Yes', font = font(20), command = self.userConfirmed, width = 200, height = 50)
+        self.backButton.pack(pady = 20)
 
     def userConfirmed(self):
         self.confirmedFunc()
@@ -86,11 +86,11 @@ class AddItemPopup(PopupWindow):
         self.tables = tables
 
         self.currentName = ctk.StringVar()
-        self.currentNameTrace = self.currentName.trace_add('write', self.update_button_text)
+        self.currentNameTrace = self.currentName.trace_add('write', self.updateButtonText)
 
         if addTableName == 'Schools':
-            self.message_label = ctk.CTkLabel(self, text = 'Add School', font = font(40), wraplength = 300, justify = 'center') 
-            self.message_label.pack(pady = 40)
+            self.messageLabel = ctk.CTkLabel(self, text = 'Add School', font = font(40), wraplength = 300, justify = 'center') 
+            self.messageLabel.pack(pady = 40)
 
             self.nameLabel = ctk.CTkLabel(self, text = 'School Name', font = font(20), wraplength = 300, justify = 'center')
             self.nameLabel.pack(pady = 10)
@@ -104,8 +104,8 @@ class AddItemPopup(PopupWindow):
         elif addTableName == 'Classes':
             # self.currentName.trace_remove('write', self.currentNameTrace)
 
-            self.message_label = ctk.CTkLabel(self, text = 'Add Class', font = font(40), wraplength = 300, justify = 'center')
-            self.message_label.pack(pady = 40)
+            self.messageLabel = ctk.CTkLabel(self, text = 'Add Class', font = font(40), wraplength = 300, justify = 'center')
+            self.messageLabel.pack(pady = 40)
 
             self.classLevelLabel = ctk.CTkLabel(self, text = 'Class Level', font = font(20), wraplength = 300, justify = 'center')
             self.classLevelLabel.pack(pady = 10)
@@ -123,8 +123,8 @@ class AddItemPopup(PopupWindow):
             self.rowconfigure(2, weight = 1)
             self.rowconfigure(3, weight = 2)
 
-            self.message_label = ctk.CTkLabel(self, text = 'Add Student', font = font(40), wraplength = 300, justify = 'center')
-            self.message_label.grid(column = 0, row = 0, sticky = 'nsew', pady = (40, 0))
+            self.messageLabel = ctk.CTkLabel(self, text = 'Add Student', font = font(40), wraplength = 300, justify = 'center')
+            self.messageLabel.grid(column = 0, row = 0, sticky = 'nsew', pady = (40, 0))
 
             self.namesFrame = ctk.CTkFrame(self, fg_color = 'transparent')
             self.emailGradeFrame = ctk.CTkFrame(self, fg_color = 'transparent')
@@ -185,9 +185,9 @@ class AddItemPopup(PopupWindow):
         self.close()
 
 
-    def update_button_text(self, *args):
-        new_text = f"Add {self.currentName.get()}"
-        self.confirmButton.configure(text = new_text)
+    def updateButtonText(self, *args):
+        newText = f"Add {self.currentName.get()}"
+        self.confirmButton.configure(text = newText)
 
 # Dashboard
 def openDashboard(userRole):
