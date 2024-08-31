@@ -5,6 +5,7 @@ from customtkinter import CTkFont
 from dblib import SqlConnection
 from bcrypt import hashpw, checkpw, gensalt
 from cryptography.fernet import Fernet
+from random import randrange
 
 localEncryptionKey = b'IN08AtGTPSYE8mqtyKqwPTQP0ihKxi9672iclN3qEE0='
 
@@ -121,3 +122,48 @@ def findRowID(treeview: ttk.Treeview, value: str) -> str | None:   # finds table
 
 def font(size):
     return CTkFont('Roboto', size)
+
+import smtplib
+from email.message import EmailMessage
+
+def sendResetPasswordEmail(receiverEmail: str, databaseConn: SqlConnection):
+
+    if databaseConn.resultFromQuery(f"select email from users where email = '{receiverEmail}';"):
+        securityCode = randrange(10000000, 99999999)
+
+        # Email details
+        senderEmail = 'dar.lusitana@gmail.com'
+        password = 'umka nvcb ubhg clhb'   # store on cloud database instead
+        subject = 'Reset Password'
+        body = f'''Hi {databaseConn.resultFromQuery(f"select fname from users where email = '{receiverEmail}'")[0][0]},
+There was a request to change your password!
+
+If you did not make this request then please ignore this email.
+
+Otherwise, please use this code in the Class Management Program to reset your password:
+
+{securityCode}'''
+        
+        # Create an EmailMessage object
+        msg = EmailMessage()
+        msg['From'] = senderEmail
+        msg['To'] = receiverEmail
+        msg['Subject'] = subject
+        msg.set_content(body)
+
+        # SMTP server configuration
+        smtp_server = 'smtp.gmail.com'
+        smtp_port = 587
+
+        try:
+            with smtplib.SMTP(smtp_server, smtp_port) as server:
+                server.starttls()  # Secure the connection
+                server.login(senderEmail, password)
+                server.send_message(msg)
+            print('Email sent successfully!')
+            return securityCode
+        except Exception as e:
+            print(f'Error sending email: {e}')
+            return 0
+    else:
+        return -1

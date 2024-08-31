@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from utils import font, writeSavedCredentials, getCredentialsPath, verifySignIn
+from utils import font, writeSavedCredentials, getCredentialsPath, verifySignIn, sendResetPasswordEmail
 from dblib import *
 import app
     
@@ -20,6 +20,8 @@ def openSignInWindow(databaseConnection):
             incorrectDetailsLabel = ctk.CTkLabel(signInWindow, text = 'Incorrect email or password', font = font(20), text_color = '#eb4034')
             incorrectDetailsLabel.place(relx = 0.05, rely = 0.35)
             incorrectDetailsLabel.after(3000, incorrectDetailsLabel.destroy)
+
+            forgotPasswordButton.place(relx = 0.18, rely = 0.545)
             
 
     signInWindow = ctk.CTk()
@@ -41,7 +43,12 @@ def openSignInWindow(databaseConnection):
     signInButton = ctk.CTkButton(signInWindow, text = 'Sign In', font = font(30), height = 50, width = 150, command = signInAction)
     signInButton.place(relx = 0.05, rely = 0.54)
 
-    rememberCredsCheckbox = ctk.CTkCheckBox(signInWindow, text = 'Remember me', font = font(17), checkbox_width = 32, checkbox_height = 32)
+    def action():
+        sendResetPasswordEmail(emailInput.get(), databaseConnection)
+
+    forgotPasswordButton = ctk.CTkButton(signInWindow, text = 'Forgot Password?', command = action, font = font(18), width = 150, fg_color = 'transparent')
+
+    rememberCredsCheckbox = ctk.CTkCheckBox(signInWindow, text = 'Remember me', font = font(20), checkbox_width = 32, checkbox_height = 32)
     rememberCredsCheckbox.place(relx = 0.51, rely = 0.55)
     rememberCredsCheckbox.select()
 
