@@ -1,8 +1,57 @@
 import customtkinter as ctk
-from utils import font, writeSavedCredentials, getCredentialsPath, verifySignIn, sendResetPasswordEmail
+from utils import font, writeSavedCredentials, getCredentialsPath, verifySignIn, sendResetPasswordEmail, hashPassword
 from dblib import *
 import app
+
+class NewPasswordPopup(app.PopupWindow):
+    def __init__(self, master: ctk.CTk, databaseConn: SqlConnection, userEmail):
+        super().__init__(master, title = 'New Password', width = 500, height = 450)
+
+        self.databaseConn = databaseConn
+        self.userEmail = userEmail
+
+        self.messageLabel = ctk.CTkLabel(self, text = 'Change Password', font = font(40), wraplength = 300, justify = 'center') 
+        self.messageLabel.pack(pady = 40)
+
+        self.nameLabel = ctk.CTkLabel(self, text = 'Enter a new password', font = font(20), wraplength = 300, justify = 'center')
+        self.nameLabel.pack(pady = 10)
+
+        self.passwordEntry = ctk.CTkEntry(self, placeholder_text = 'New password', show = '•', width = 350, height = 50, font = font(20))
+        self.passwordEntry.pack(padx = 20)
+
+        self.confirmButton = ctk.CTkButton(self, text = 'Confim new password', font = font(20), width = 350, height = 50, command = self.userConfirmed)
+        self.confirmButton.pack(pady = 20, padx = 75)
+
+    def userConfirmed(self):
+        hashedPassword = hashPassword(self.passwordEntry.get()).decode()
+        self.databaseConn.execQuery(f"update users set password = '{hashedPassword}' where email = '{self.userEmail}';")
+        self.close()
     
+class CodeVerificationPopup(app.PopupWindow):
+    def __init__(self, master: ctk.CTk, code: int, fun):
+        super().__init__(master, title = 'Code Verification', width = 500, height = 450)
+
+        self.code = code
+        self.fun = fun
+        
+        self.messageLabel = ctk.CTkLabel(self, text = 'Confirmation Code', font = font(40), wraplength = 300, justify = 'center') 
+        self.messageLabel.pack(pady = 40)
+
+        self.nameLabel = ctk.CTkLabel(self, text = 'Enter confirmation code emailed to you', font = font(20), wraplength = 300, justify = 'center')
+        self.nameLabel.pack(pady = 10)
+
+        self.codeEntry = ctk.CTkEntry(self, placeholder_text = 'Security Code', width = 350, height = 50, font = font(20))
+        self.codeEntry.pack(padx = 20)
+
+        self.confirmButton = ctk.CTkButton(self, text = 'Confirm', font = font(20), width = 350, height = 50, command = self.userConfirmed)
+        self.confirmButton.pack(pady = 20, padx = 75)
+
+    def userConfirmed(self):
+        if self.codeEntry.get() == str(self.code):
+            self.fun()
+            self.close()
+        else:
+            print('wrong code')
 
 def openSignInWindow(databaseConnection):
     def signInAction(event = None):
@@ -44,7 +93,11 @@ def openSignInWindow(databaseConnection):
     signInButton.place(relx = 0.05, rely = 0.54)
 
     def action():
-        sendResetPasswordEmail(emailInput.get(), databaseConnection)
+        resetEmail = emailInput.get()
+        result = sendResetPasswordEmail(resetEmail, databaseConnection)
+        if result != -1 and result != 0:
+            print(result)
+            CodeVerificationPopup(signInWindow, result, lambda: NewPasswordPopup(signInWindow, databaseConnection, resetEmail))
 
     forgotPasswordButton = ctk.CTkButton(signInWindow, text = 'Forgot Password?', command = action, font = font(18), width = 150, fg_color = 'transparent')
 

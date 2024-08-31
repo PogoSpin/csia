@@ -3,8 +3,12 @@ from tkinter import ttk
 from tkinter import CENTER, NO
 from customtkinter import CTkFont
 from dblib import SqlConnection
+
 from bcrypt import hashpw, checkpw, gensalt
 from cryptography.fernet import Fernet
+
+import smtplib
+from email.message import EmailMessage
 from random import randrange
 
 localEncryptionKey = b'IN08AtGTPSYE8mqtyKqwPTQP0ihKxi9672iclN3qEE0='
@@ -123,8 +127,6 @@ def findRowID(treeview: ttk.Treeview, value: str) -> str | None:   # finds table
 def font(size):
     return CTkFont('Roboto', size)
 
-import smtplib
-from email.message import EmailMessage
 
 def sendResetPasswordEmail(receiverEmail: str, databaseConn: SqlConnection):
 
