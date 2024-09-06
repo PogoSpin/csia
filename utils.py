@@ -13,6 +13,17 @@ from random import randrange
 
 localEncryptionKey = b'IN08AtGTPSYE8mqtyKqwPTQP0ihKxi9672iclN3qEE0='
 
+def cache(function: callable):
+    cache = {}
+    def wrapper(*args):
+        if args in cache:
+            return cache[args]
+        result = function(*args)
+        cache[args] = result
+        return result
+    return wrapper
+
+
 def verifySignIn(connection: SqlConnection, username: str, password: str) -> str:
     users = connection.resultFromQuery('select email, password from users;')
 
@@ -29,12 +40,13 @@ def hashPassword(password: str) -> str:
     salt = gensalt()
     return hashpw(bytePassword, salt)
 
-
+@cache
 def encryptMessage(message: str, key: bytes) -> bytes:
     fernet = Fernet(key)
     encryptedMessage = fernet.encrypt(message.encode('utf-8'))
     return encryptedMessage
 
+@cache
 def decryptMessage(encryptedMessage: bytes, key: bytes) -> str:
     fernet = Fernet(key)
     decryptedMessage = fernet.decrypt(encryptedMessage).decode('utf-8')
