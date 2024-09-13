@@ -51,7 +51,7 @@ selectedStudent = None
 
 
 class PopupWindow(ctk.CTkToplevel):
-    def __init__(self, master: ctk.CTk, title: str = 'Popup', width: int = 500, height: int = 400):
+    def __init__(self, master: ctk.CTk, title: str = 'Popup', width: int = 450, height: int = 400):
         super().__init__(master)
         self.geometry(f'{width}x{height}')
         self.title(title)
@@ -62,7 +62,7 @@ class PopupWindow(ctk.CTkToplevel):
         self.destroy()
 
 class ConfirmationPopup(PopupWindow):
-    def __init__(self, master: ctk.CTk, message: str, confirmedFunc: callable, width: int = 300, height: int = 200):
+    def __init__(self, master: ctk.CTk, message: str, confirmedFunc: callable, width: int = 400, height: int = 200):
         super().__init__(master, title = 'Confirmation', width = width, height = height)
         
         self.message = message
