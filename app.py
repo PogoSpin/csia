@@ -201,6 +201,26 @@ def openDashboard(userRole):
     ctk.set_appearance_mode('dark')
     ctk.set_default_color_theme('blue')
 
+    def showSelectItemFirstText():
+        selectFirstLabel = ctk.CTkLabel(dashboardWindow, text = 'You must select a row first', font = font(20), text_color = '#eb4034')
+        selectFirstLabel.place(relx = 0.48, rely = 0.02)
+        selectFirstLabel.after(2000, selectFirstLabel.destroy)
+
+    def tabChanged():
+        tab = tabview.get()
+        if tab == 'Classes' and not selectedSchool:
+            tabview.set('Schools')
+            showSelectItemFirstText()
+        elif tab == 'Students' and not selectedClass:
+            if selectedSchool:
+                tabview.set('Classes')
+                showSelectItemFirstText()
+            else:
+                tabview.set('Schools')
+                showSelectItemFirstText()
+        changeStyleToTab()
+
+
     def changeStyleToTab(event = None): # work around weird tab styling system
         'sets different table style for students tab'
         if event:   # if coming from double click bind, also change the tab
@@ -211,24 +231,15 @@ def openDashboard(userRole):
         else:
             confStyle(dashboardWindow)
 
-    def signOut():
-        dashboardWindow.destroy()
-        clearSavedCredentials(getCredentialsPath())
-        main()
-
-    signOutButton = ctk.CTkButton(dashboardWindow, text = 'Sign Out', command = signOut, font = font(25), height = 38, width = 297)
-    signOutButton.place(relx = 0.726, rely = 0.01)
 
     # tabview
-    tabview = ctk.CTkTabview(dashboardWindow, width = 800, height = 740, anchor = 'w', corner_radius = cornerRadius, command = changeStyleToTab)
+    tabview = ctk.CTkTabview(dashboardWindow, width = 800, height = 740, anchor = 'w', corner_radius = cornerRadius, command = tabChanged)
     tabview.pack(anchor = 'w', padx = 30, pady = 30, side = 'left')
     tabview._segmented_button.configure(font = font(25))
 
     schoolsTab = tabview.add('Schools')
     classesTab = tabview.add('Classes')
     studentsTab = tabview.add('Students')
-
-
 
 
     # grid setup for tables
@@ -323,22 +334,6 @@ def openDashboard(userRole):
     loadToClassesTable()
     loadToStudentsTable()
 
-
-
-
-    # right panel
-    rightPanel = ctk.CTkFrame(dashboardWindow, height = 715, width = 300, corner_radius = cornerRadius)
-    rightPanel.pack(padx = (0, 30), pady = (25, 0), side = 'right')
-    
-    # right panel grid setup for buttons
-    rightPanel.columnconfigure(0, weight = 1)
-    rightPanel.rowconfigure(0, weight = 1)
-    rightPanel.rowconfigure(1, weight = 1)
-    rightPanel.rowconfigure(2, weight = 1)
-    rightPanel.rowconfigure(3, weight = 1)
-    
-    rightPanel.grid_propagate(False) # disable auto resizing
-
     def currentRowSelected() -> str: # current item selected on all tables, ie: the item selected in current table user is in
         currentTab = tabview.get()
         if currentTab == 'Schools':
@@ -406,6 +401,26 @@ def openDashboard(userRole):
     def addItemButtonAction():
         addItemWindow = AddItemPopup(dashboardWindow, tabview.get(), databaseConn, (schoolsTable, classesTable, studentsTable))
 
+    def signOut():
+        dashboardWindow.destroy()
+        clearSavedCredentials(getCredentialsPath())
+        main()
+
+    signOutButton = ctk.CTkButton(dashboardWindow, text = 'Sign Out', command = signOut, font = font(25), height = 45, width = 297, corner_radius = cornerRadius)
+    signOutButton.place(relx = 0.726, rely = 0.06)
+
+    # right panel
+    rightPanel = ctk.CTkFrame(dashboardWindow, height = 665, width = 300, corner_radius = cornerRadius)
+    rightPanel.pack(padx = (0, 30), pady = (75, 0), side = 'right')
+    
+    # right panel grid setup for buttons
+    rightPanel.columnconfigure(0, weight = 1)
+    rightPanel.rowconfigure(0, weight = 1)
+    rightPanel.rowconfigure(1, weight = 1)
+    rightPanel.rowconfigure(2, weight = 1)
+    rightPanel.rowconfigure(3, weight = 1)
+    
+    rightPanel.grid_propagate(False) # disable auto resizing
 
     # rightPanel buttons
     viewItemButton = ctk.CTkButton(rightPanel, text = 'View Item', font = font(35), width = 250, height = 120, corner_radius = cornerRadius)
