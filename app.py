@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from tkinter import ttk
+from tkinter.ttk import Treeview
 # from signIn import *
 from dblib import *
 from utils import *
@@ -79,7 +79,7 @@ class ConfirmationPopup(PopupWindow):
         self.close()
 
 class AddItemPopup(PopupWindow):
-    def __init__(self, master: ctk.CTk, addTableName: str, conn: SqlConnection, tables: tuple[ttk.Treeview, ttk.Treeview, ttk.Treeview]):
+    def __init__(self, master: ctk.CTk, addTableName: str, conn: SqlConnection, tables: tuple[Treeview, Treeview, Treeview]):
         super().__init__(master, f'Add {addTableName}')
 
         self.conn = conn
@@ -343,7 +343,7 @@ def openDashboard(userRole):
         elif currentTab == 'Students':
             return selectedStudent
         
-    def currentTabSelected() -> ttk.Treeview:
+    def currentTabSelected() -> Treeview:
         currentTab = tabview.get()
         if currentTab == 'Schools':
             return schoolsTable
