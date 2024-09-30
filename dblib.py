@@ -13,10 +13,10 @@ class SqlConnection:
     def resultFromQuery(self, query: str) -> list[tuple]:
         self.cursor.execute(query)
         return self.cursor.fetchall()
-    
-    def execQuery(self, query: str) -> list[tuple]:
+
+    def execQuery(self, query: str) -> None:
         self.cursor.execute(query)
-        return self.connection.commit()
+        self.connection.commit()
     
     def close(self):
         self.cursor.close()
