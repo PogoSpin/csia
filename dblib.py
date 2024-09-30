@@ -18,6 +18,6 @@ class SqlConnection:
         self.cursor.execute(query)
         self.connection.commit()
     
-    def close(self):
+    def close(self) -> None:
         self.cursor.close()
         self.connection.close()
