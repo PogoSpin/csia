@@ -10,7 +10,7 @@ cornerRadius = 20
 
 databaseConn = None
 
-def dbConnect():
+def dbConnect() -> None:
     global databaseConn
     databaseConn = SqlConnection(connectionParameters)
     try:
@@ -22,25 +22,33 @@ def dbConnect():
     
 def main():
     import signIn
+
     # initiate database connection
     dbConnect()
 
-    # check saved credentials
+    # checks saved credentials
     savedCredentials = readSavedCredentials(getCredentialsPath())
 
-    if savedCredentials: # if user has already signed in before and credentials are saved locally
-        if savedCredentials != -1:
-            role = verifySignIn(databaseConn, savedCredentials[0], savedCredentials[1])  # check that credentials are valid
+    # if user has already signed in before and credentials are saved locally
+    if savedCredentials:
+        if savedCredentials != -1: # -1 only returns if failed to decrypt saved cred
+
+            # check that credentials are valid by running them through the database
+            role = verifySignIn(databaseConn, savedCredentials[0], savedCredentials[1])
+
             if role:
+                # if saved credentials were valid in the database, opens dashboard
                 openDashboard(role)
             else:
-                # tell user saved credentials didn't work and send to sign in page
+                # saved credentials didn't authenticate and send to sign in page
                 print('Saved credentials arent valid, opening sign in page')
                 signIn.openSignInWindow(databaseConn)
         else:
+            # if wasn't able to decrypt saved credentials, back to sign in page
             print('Unable to decrypt saved credentials, opening sign in page')
             signIn.openSignInWindow(databaseConn)
     else:
+        # if saved credentials arent found, open sign in page
         signIn.openSignInWindow(databaseConn)
 
 
@@ -51,30 +59,54 @@ selectedStudent = None
 
 
 class PopupWindow(ctk.CTkToplevel):
-    def __init__(self, master: ctk.CTk, title: str = 'Popup', width: int = 450, height: int = 400):
+    def __init__(self, master: ctk.CTk, 
+                 title: str = 'Popup', width: int = 500, height: int = 400) -> None:
+        
         super().__init__(master)
         self.geometry(f'{width}x{height}')
         self.title(title)
         self.attributes('-topmost', True)
         self.protocol('WM_DELETE_WINDOW', self.close)
 
-    def close(self):
+    def close(self) -> None:
         self.destroy()
 
 class ConfirmationPopup(PopupWindow):
-    def __init__(self, master: ctk.CTk, message: str, confirmedFunc: callable, width: int = 400, height: int = 200):
+    def __init__(
+            self, 
+            master: ctk.CTk, 
+            message: str, 
+            confirmedFunc: callable, 
+            width: int = 400, 
+            height: int = 200
+        ) -> None:
+        
         super().__init__(master, title = 'Confirmation', width = width, height = height)
         
         self.message = message
         self.confirmedFunc = confirmedFunc
         
-        self.messageLabel = ctk.CTkLabel(self, text = message, font = font(20), wraplength = 300, justify = 'center')
+        self.messageLabel = ctk.CTkLabel(
+            self, 
+            text = message, 
+            font = font(20), 
+            wraplength = 300, 
+            justify = 'center'
+        )
         self.messageLabel.pack(pady = 40)
         
-        self.confirmButton = ctk.CTkButton(self, text = 'Yes', font = font(20), command = self.userConfirmed, width = 200, height = 50)
+
+        self.confirmButton = ctk.CTkButton(
+            self, 
+            text = 'Yes', 
+            font = font(20), 
+            command = self.userConfirmed, 
+            width = 200, 
+            height = 50
+        )
         self.confirmButton.pack(pady = 20)
 
-    def userConfirmed(self):
+    def userConfirmed(self) -> None:
         self.confirmedFunc()
         self.close()
 
@@ -401,12 +433,22 @@ def openDashboard(userRole):
     def addItemButtonAction():
         addItemWindow = AddItemPopup(dashboardWindow, tabview.get(), databaseConn, (schoolsTable, classesTable, studentsTable))
 
-    def signOut():
+    def signOut(): # action when signOut button is clicked
         dashboardWindow.destroy()
         clearSavedCredentials(getCredentialsPath())
         main()
 
-    signOutButton = ctk.CTkButton(dashboardWindow, text = 'Sign Out', command = signOut, font = font(25), height = 45, width = 297, corner_radius = cornerRadius)
+    # assign CTkButton instance
+    signOutButton = ctk.CTkButton(dashboardWindow, 
+        text = 'Sign Out', 
+        command = signOut, 
+        font = font(25), 
+        height = 45, 
+        width = 297, 
+        corner_radius = cornerRadius
+    )
+
+    # place button in screen
     signOutButton.place(relx = 0.726, rely = 0.06)
 
     # right panel
