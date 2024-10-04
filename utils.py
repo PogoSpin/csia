@@ -11,15 +11,27 @@ import smtplib
 from email.message import EmailMessage
 from random import randrange
 
+# Example key
 localEncryptionKey = b'IN08AtGTPSYE8mqtyKqwPTQP0ihKxi9672iclN3qEE0='
 
-def cache(function: callable):
+def cache(function: callable) -> callable:
+    'Caching Decorator'
+
+    # dictionary to store cached results {arguments given: output from method}
     cache = {}
-    def wrapper(*args):
+
+    def wrapper(*args: any):
+        # check if the arguments have been cached
         if args in cache:
-            return cache[args]
+            return cache[args] # if yes, return the cached result
+        
+        # else run the arguments through the method
         result = function(*args)
+
+        # store the result in the cache
         cache[args] = result
+
+        # return the result
         return result
     return wrapper
 
@@ -54,46 +66,64 @@ def decryptMessage(encryptedMessage: bytes, key: bytes) -> str:
 
 
 def getCredentialsPath() -> str:
+    'finds the folder path of saved credentials'
+
     if os.name == 'nt':  # for windows
-        storeDir = os.getenv('appdata')
+        storeDir = os.path.join(os.getenv('appdata'), 'dlClassManagement')
     else:  # for mac
-        storeDir = os.path.join(Path.home(), '.config')
+        storeDir = os.path.join(Path.home(), 'Library','Application Support', 'dlClassManagement')
 
-    storeDir = os.path.join(storeDir, 'dlClassManagement')
-
+    # if the path doesn't exist yet, create the program directory
     if not os.path.exists(storeDir):
         os.makedirs(storeDir)
+    
     return storeDir
 
 def readSavedCredentials(storeDir: str) -> list[str, str]:
+    'reads and decrypts saved credentials'
+
+    # gets path of credentials file in that folder
     path = os.path.join(storeDir, 'credentials.dat')
 
+    # if the file exists, open it, decrypt both lines, 
+    # and return a 2 item list of plaintext username and password
     if os.path.exists(path):
         with open(path, 'r') as f:
             try:
+                # split file's 2 lines
                 data = f.read().split('\n')
+
+                # replace list items with decrypted text
                 data[0] = decryptMessage(data[0], localEncryptionKey)
                 data[1] = decryptMessage(data[1], localEncryptionKey)
+
                 return data
             except:
+                # if failed to decrypt, return -1 for seperate alert
                 return -1
     else:
         return None
 
-def writeSavedCredentials(storeDir: str, username: str, password: str):
+def writeSavedCredentials(storeDir: str, username: str, password: str) -> None:
+    'writes and encrypts credentials'
+
+    # gets path to file, creates one if it doesn't exist
     path = os.path.join(storeDir, 'credentials.dat')
 
     with open(path, 'w') as f:
-        f.truncate(0)
+        f.truncate(0) # erases previous data in the file
+
+        # encrypts username and password
         encryptedUsername = encryptMessage(username, localEncryptionKey).decode('utf-8')
         encryptedPassword = encryptMessage(password, localEncryptionKey).decode('utf-8')
+
+        # write that data to the file
         f.write(encryptedUsername + '\n' + encryptedPassword)
 
-def clearSavedCredentials(storeDir: str):    # not used
+def clearSavedCredentials(storeDir: str) -> None:
+    'Deletes the saved credentials file'
     path = os.path.join(storeDir, 'credentials.dat')
-
-    with open(path, 'w') as f:
-        f.truncate(0)
+    os.remove(path)
 
 def confStyle(master, headingFontSize: int = 60, itemFontSize: int = 45):
     # table style
