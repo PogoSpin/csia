@@ -93,19 +93,19 @@ def openSignInWindow(databaseConnection):
     signInButton = ctk.CTkButton(signInWindow, text = 'Sign In', font = font(30), height = 50, width = 150, command = signInAction)
     signInButton.place(relx = 0.05, rely = 0.54)
 
-    def action():
+    def forgotPasswordAction():
         resetEmail = emailInput.get()
 
-        def longFun():
+        def sendEmailCode():
             result = sendResetPasswordEmail(resetEmail, databaseConnection)
             if result != -1 and result != 0:
                 print(result)
                 CodeVerificationPopup(signInWindow, result, lambda: NewPasswordPopup(signInWindow, databaseConnection, resetEmail))
         
-        thread = threading.Thread(target = longFun)
+        thread = threading.Thread(target = sendEmailCode)
         thread.start()
 
-    forgotPasswordButton = ctk.CTkButton(signInWindow, text = 'Forgot Password?', command = action, font = font(18), width = 150, fg_color = 'transparent')
+    forgotPasswordButton = ctk.CTkButton(signInWindow, text = 'Forgot Password?', command = forgotPasswordAction, font = font(18), width = 150, fg_color = 'transparent')
 
     rememberCredsCheckbox = ctk.CTkCheckBox(signInWindow, text = 'Remember me', font = font(20), checkbox_width = 32, checkbox_height = 32)
     rememberCredsCheckbox.place(relx = 0.51, rely = 0.55)
