@@ -71,7 +71,7 @@ def openSignInWindow(databaseConnection):
             incorrectDetailsLabel.place(relx = 0.05, rely = 0.35)
             incorrectDetailsLabel.after(3000, incorrectDetailsLabel.destroy)
 
-            forgotPasswordButton.place(relx = 0.18, rely = 0.545)
+            forgotPasswordButton.place(relx = 0.182, rely = 0.54)
             
 
     signInWindow = ctk.CTk()
@@ -105,7 +105,7 @@ def openSignInWindow(databaseConnection):
         thread = threading.Thread(target = sendEmailCode)
         thread.start()
 
-    forgotPasswordButton = ctk.CTkButton(signInWindow, text = 'Forgot Password?', command = forgotPasswordAction, font = font(18), width = 150, fg_color = 'transparent')
+    forgotPasswordButton = ctk.CTkButton(signInWindow, text = 'Forgot Password?', command = forgotPasswordAction, font = font(20), width = 180, height = 40, fg_color = 'transparent')
 
     rememberCredsCheckbox = ctk.CTkCheckBox(signInWindow, text = 'Remember me', font = font(20), checkbox_width = 32, checkbox_height = 32)
     rememberCredsCheckbox.place(relx = 0.51, rely = 0.55)
