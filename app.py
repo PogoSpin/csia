@@ -75,13 +75,14 @@ class ConfirmationPopup(PopupWindow):
     def __init__(
             self, 
             master: ctk.CTk, 
-            message: str, 
             confirmedFunc: callable, 
+            message: str, 
+            title: str = 'Confirmation',
             width: int = 400, 
             height: int = 200
         ) -> None:
         
-        super().__init__(master, title = 'Confirmation', width = width, height = height)
+        super().__init__(master, title = title, width = width, height = height)
         
         self.message = message
         self.confirmedFunc = confirmedFunc
