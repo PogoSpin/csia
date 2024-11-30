@@ -455,7 +455,7 @@ def openDashboard(userRole):
     
     def removeItemButtonAction():
         if currentRowSelected():
-            warningWindow = ConfirmationPopup(dashboardWindow, f'Are you sure you want to delete {currentRowSelected()}?', removeItem)
+            warningWindow = ConfirmationPopup(dashboardWindow, removeItem, f'Are you sure you want to delete {currentRowSelected()}?', 'Comfirm Deletion')
 
     def addItemButtonAction():
         addItemWindow = AddItemPopup(dashboardWindow, tabview.get(), databaseConn, (schoolsTable, classesTable, studentsTable))
@@ -468,7 +468,7 @@ def openDashboard(userRole):
     # assign CTkButton instance
     signOutButton = ctk.CTkButton(dashboardWindow, 
         text = 'Sign Out', 
-        command = signOut, 
+        command = lambda: ConfirmationPopup(dashboardWindow, signOut, 'Are you sure you want to sign out?', 'Sign Out Confirmation'), 
         font = font(25), 
         height = 45, 
         width = 297, 
