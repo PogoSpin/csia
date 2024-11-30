@@ -10,46 +10,46 @@ cornerRadius = 20
 
 databaseConn = None
 
-def dbConnect() -> None:
+def dbConnect():
     global databaseConn
     databaseConn = SqlConnection(connectionParameters)
     try:
         databaseConn.initiate()
     except Exception as e:
-        # show UI window of error 'failed to connect' to user
-        print('failed database connection')
-        raise e
+        WarningWindow(f'Failed database connection.\n\nError: {e}', height = 350)
+        return False
+    
+    return True
     
 def main():
     import signIn
 
     # initiate database connection
-    dbConnect()
+    if dbConnect(): 
+        # checks saved credentials
+        savedCredentials = readSavedCredentials(getCredentialsPath())
 
-    # checks saved credentials
-    savedCredentials = readSavedCredentials(getCredentialsPath())
+        # if user has already signed in before and credentials are saved locally
+        if savedCredentials:
+            if savedCredentials != -1: # -1 only returns if failed to decrypt saved cred
 
-    # if user has already signed in before and credentials are saved locally
-    if savedCredentials:
-        if savedCredentials != -1: # -1 only returns if failed to decrypt saved cred
+                # check that credentials are valid by running them through the database
+                role = verifySignIn(databaseConn, savedCredentials[0], savedCredentials[1])
 
-            # check that credentials are valid by running them through the database
-            role = verifySignIn(databaseConn, savedCredentials[0], savedCredentials[1])
-
-            if role:
-                # if saved credentials were valid in the database, opens dashboard
-                openDashboard(role)
+                if role:
+                    # if saved credentials were valid in the database, opens dashboard
+                    openDashboard(role)
+                else:
+                    # saved credentials didn't authenticate and send to sign in page
+                    print('Saved credentials arent valid, opening sign in page')
+                    signIn.openSignInWindow(databaseConn)
             else:
-                # saved credentials didn't authenticate and send to sign in page
-                print('Saved credentials arent valid, opening sign in page')
+                # if wasn't able to decrypt saved credentials, back to sign in page
+                print('Unable to decrypt saved credentials, opening sign in page')
                 signIn.openSignInWindow(databaseConn)
         else:
-            # if wasn't able to decrypt saved credentials, back to sign in page
-            print('Unable to decrypt saved credentials, opening sign in page')
+            # if saved credentials arent found, open sign in page
             signIn.openSignInWindow(databaseConn)
-    else:
-        # if saved credentials arent found, open sign in page
-        signIn.openSignInWindow(databaseConn)
 
 
 # vars for currently selected school/class/student
@@ -57,6 +57,37 @@ selectedSchool = None
 selectedClass = None
 selectedStudent = None
 
+class WarningWindow(ctk.CTk):
+    def __init__(self, message: str = 'There has been an error. L BOZO.', title: str = 'Warning', width: int = 400, height: int = 200):
+        super().__init__()
+
+        self.title(title)
+        self.geometry(f'{width}x{height}')
+
+
+        self.message = message
+        
+        self.messageLabel = ctk.CTkLabel(
+            self, 
+            text = message, 
+            font = font(20), 
+            wraplength = 300, 
+            justify = 'center'
+        )
+        self.messageLabel.pack(pady = 40)
+        
+
+        self.confirmButton = ctk.CTkButton(
+            self, 
+            text = 'Ok', 
+            font = font(20), 
+            command = lambda: self.destroy(),
+            width = 200, 
+            height = 50
+        )
+        self.confirmButton.pack(pady = 20)
+
+        self.mainloop()
 
 class PopupWindow(ctk.CTkToplevel):
     def __init__(self, master: ctk.CTk, 
