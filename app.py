@@ -16,7 +16,7 @@ def dbConnect():
     try:
         databaseConn.initiate()
     except Exception as e:
-        WarningWindow(f'Failed database connection.\n\nError: {e}', height = 350)
+        WarningWindow(f'Failed database connection.\n\nError: {e}', 'Database Error', height = 350)
         return False
     
     return True
@@ -32,7 +32,6 @@ def main():
         # if user has already signed in before and credentials are saved locally
         if savedCredentials:
             if savedCredentials != -1: # -1 only returns if failed to decrypt saved cred
-
                 # check that credentials are valid by running them through the database
                 role = verifySignIn(databaseConn, savedCredentials[0], savedCredentials[1])
 
@@ -41,11 +40,11 @@ def main():
                     openDashboard(role)
                 else:
                     # saved credentials didn't authenticate and send to sign in page
-                    WarningWindow("Saved credentials aren't valid, close to open sign in page.")
+                    WarningWindow("Saved credentials are no longer valid, this may be because your account has been deleted or modified. Close this to open the sign in page.", 'Credentials Error')
                     signIn.openSignInWindow(databaseConn)
             else:
                 # if wasn't able to decrypt saved credentials, back to sign in page
-                WarningWindow('Unable to decrypt saved credentials, close to open sign in page.')
+                WarningWindow('Unable to decrypt saved credentials. This may be because of changes made to the credentials file. Close this to open the sign in page.', 'Credentials Error')
                 signIn.openSignInWindow(databaseConn)
         else:
             # if saved credentials arent found, open sign in page

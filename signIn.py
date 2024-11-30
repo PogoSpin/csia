@@ -52,7 +52,7 @@ class CodeVerificationPopup(app.PopupWindow):
             self.fun()
             self.close()
         else:
-            print('wrong code')
+            app.WarningWindow('Wrong code, the verification code should been sent to the typed email.', 'Incorrect Code')
 
 def openSignInWindow(databaseConnection):
     def signInAction(event = None):
