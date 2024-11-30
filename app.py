@@ -41,11 +41,11 @@ def main():
                     openDashboard(role)
                 else:
                     # saved credentials didn't authenticate and send to sign in page
-                    print('Saved credentials arent valid, opening sign in page')
+                    WarningWindow('Saved credentials arent valid, opening sign in page')
                     signIn.openSignInWindow(databaseConn)
             else:
                 # if wasn't able to decrypt saved credentials, back to sign in page
-                print('Unable to decrypt saved credentials, opening sign in page')
+                WarningWindow('Unable to decrypt saved credentials, opening sign in page')
                 signIn.openSignInWindow(databaseConn)
         else:
             # if saved credentials arent found, open sign in page
