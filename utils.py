@@ -166,7 +166,7 @@ def findRowID(treeview: ttk.Treeview, value: str) -> str | None:   # finds table
             return itemId
     return None
 
-def font(size):
+def font(size) -> CTkFont:
     return CTkFont('Roboto', size)
 
 
