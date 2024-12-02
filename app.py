@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter.ttk import Treeview
+from tkinter.font import Font
 # from signIn import *
 from dblib import *
 from utils import *
@@ -16,7 +17,7 @@ def dbConnect():
     try:
         databaseConn.initiate()
     except Exception as e:
-        WarningWindow(f'There was an error connecting to the database, please check if you have an internet connection.\n\nError: {e}', 'Database Error', height = 400)
+        WarningWindow(f'There was an error connecting to the database, please check if you have an internet connection.\n\nError: {e}', 'Database Error')
         return False
     
     return True
@@ -39,7 +40,6 @@ def main():
                     WarningWindow(
                         'There has been an error confirming sign in credentials with server, please notify admin.', 
                         'Server credential verification error', 
-                        height = 250
                     )
                     quit()
 
@@ -71,10 +71,16 @@ selectedClass = None
 selectedStudent = None
 
 class WarningWindow(ctk.CTk):
-    def __init__(self, message: str = 'There has been an error. L BOZO.', title: str = 'Warning', width: int = 400, height: int = 200):
+    def __init__(self, message: str = 'There has been an error. L BOZO.', title: str = 'Warning', width: int = 400, height: int = None):
         super().__init__()
 
         self.title(title)
+        self.width = width
+
+        # Calculate required height for the text
+        if height is None:
+            height = self.calculate_height(message, wraplength=width - 50, font_size=20)
+        
         self.geometry(f'{width}x{height}')
 
 
@@ -101,6 +107,30 @@ class WarningWindow(ctk.CTk):
         self.confirmButton.pack(pady = 20)
 
         self.mainloop()
+
+    def calculate_height(self, text: str, wraplength: int, font_size: int) -> int:
+        # Use tkinter Font to measure the text dimensions
+        font = Font(size = 20)
+        lines = 0
+        words = text.split()
+        line_width = 0
+
+        for word in words:
+            word_width = font.measure(word + ' ')  # Measure word width including a space
+            if line_width + word_width > wraplength:
+                lines += 1
+                line_width = word_width
+            else:
+                line_width += word_width
+        
+        # Count the last line if it contains any words
+        if line_width > 0:
+            lines += 1
+        
+        # Estimate height based on line count and font size
+        line_height = font.metrics("linespace")
+        total_height = (lines * line_height) + 160  # Adjust for padding and buttons
+        return total_height
 
 class PopupWindow(ctk.CTkToplevel):
     def __init__(self, master: ctk.CTk, 
