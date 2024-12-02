@@ -16,7 +16,7 @@ def dbConnect():
     try:
         databaseConn.initiate()
     except Exception as e:
-        WarningWindow(f'Failed database connection.\n\nError: {e}', 'Database Error', height = 350)
+        WarningWindow(f'There was an error connecting to the database, please check if you have an internet connection.\n\nError: {e}', 'Database Error', height = 400)
         return False
     
     return True
@@ -267,8 +267,8 @@ class AddItemPopup(PopupWindow):
         self.confirmButton.configure(text = newText)
 
 class WarningPopup(PopupWindow):
-    def __init__(self, master: ctk.CTk, message: str = 'There has been an error. L BOZO.', title: str = 'Warning'):
-        super().__init__(master, title, width = 400, height = 200)
+    def __init__(self, master: ctk.CTk, message: str = 'There has been an error. L BOZO.', title: str = 'Warning', width: int = 400, height: int = 200):
+        super().__init__(master, title, width, height)
 
         self.message = message
         
