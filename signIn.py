@@ -58,7 +58,14 @@ def openSignInWindow(databaseConnection):
     def signInAction(event = None):
         typedEmail = emailInput.get()
         typedPass = passwordInput.get()
-        role = verifySignIn(databaseConnection, typedEmail, typedPass)
+        try:
+            role = verifySignIn(databaseConnection, typedEmail, typedPass)
+        except:
+            app.WarningWindow(
+                'There has been an error confirming sign in credentials with server, please notify admin.', 
+                'Server credential verification error', 
+                height = 250
+            )
         if role:
             if rememberCredsCheckbox.get() == 1:
                 writeSavedCredentials(getCredentialsPath(), typedEmail, typedPass)
