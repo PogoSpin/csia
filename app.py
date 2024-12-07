@@ -281,7 +281,7 @@ class AddItemPopup(PopupWindow):
         newStudentLName = self.lnameEntry.get()
         newStudentEmail = self.emailEntry.get()
 
-        newStudentGradeClass = self.gradeEntry.get()
+        newStudentGradeClass = self.gradeEntry.get().upper()
         newStudentGrade = int(''.join(filter(str.isdigit, newStudentGradeClass)))
         newStudentClass = ''.join(filter(str.isalpha, newStudentGradeClass))
 
