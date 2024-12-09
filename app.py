@@ -327,6 +327,7 @@ class EditItemPopup(PopupWindow):
             self.classLevelLabel.pack(pady = 10)
 
             self.classLevelOption = ctk.CTkOptionMenu(self, width = 350, height = 50, font = font(20), values = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])
+            self.classLevelOption.set(itemSelected(self.currentTab, 1))
             self.classLevelOption.pack(padx = 20)
 
             self.confirmButton = ctk.CTkButton(self, text = 'Save Changes', font = font(20), width = 350, height = 50, command = self.classConfirmAction)
