@@ -296,6 +296,114 @@ class AddItemPopup(PopupWindow):
         newText = f"Add {self.currentName.get()}"
         self.confirmButton.configure(text = newText)
 
+class EditItemPopup(PopupWindow):
+    def __init__(self, master: ctk.CTk, addTableName: str, conn: SqlConnection, tables: tuple[Treeview, Treeview, Treeview], currentTab, currentRow):
+        super().__init__(master, f'Add {addTableName}')
+
+        self.conn = conn
+        self.tables = tables
+        self.currentTab = currentTab
+        self.currentRow = currentRow
+
+        if addTableName == 'Schools':
+            self.messageLabel = ctk.CTkLabel(self, text = 'Edit School', font = font(40), wraplength = 300, justify = 'center')
+            self.messageLabel.pack(pady = 40)
+
+            self.nameLabel = ctk.CTkLabel(self, text = 'School Name', font = font(20), wraplength = 300, justify = 'center')
+            self.nameLabel.pack(pady = 10)
+
+            self.nameEntry = ctk.CTkEntry(self, width = 350, height = 50, font = font(20))
+            self.nameEntry.insert(0, currentRow)
+            self.nameEntry.pack(padx = 20)
+
+            self.confirmButton = ctk.CTkButton(self, text = 'Save Changes', font = font(20), width = 350, height = 50, command = self.schoolConfirmAction)
+            self.confirmButton.pack(pady = 20, padx = 75)
+
+        elif addTableName == 'Classes':
+            self.messageLabel = ctk.CTkLabel(self, text = 'Edit Class', font = font(40), wraplength = 300, justify = 'center')
+            self.messageLabel.pack(pady = 40)
+
+            self.classLevelLabel = ctk.CTkLabel(self, text = 'Class Level', font = font(20), wraplength = 300, justify = 'center')
+            self.classLevelLabel.pack(pady = 10)
+
+            self.classLevelOption = ctk.CTkOptionMenu(self, width = 350, height = 50, font = font(20), values = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])
+            self.classLevelOption.pack(padx = 20)
+
+            self.confirmButton = ctk.CTkButton(self, text = 'Save Changes', font = font(20), width = 350, height = 50, command = self.classConfirmAction)
+            self.confirmButton.pack(pady = 20, padx = 75)
+
+        else:
+            self.columnconfigure(0, weight = 2)
+            self.rowconfigure(0, weight = 1)
+            self.rowconfigure(1, weight = 1)
+            self.rowconfigure(2, weight = 1)
+            self.rowconfigure(3, weight = 2)
+
+            self.messageLabel = ctk.CTkLabel(self, text = 'Add Student', font = font(40), wraplength = 300, justify = 'center')
+            self.messageLabel.grid(column = 0, row = 0, sticky = 'nsew', pady = (40, 0))
+
+            self.namesFrame = ctk.CTkFrame(self, fg_color = 'transparent')
+            self.emailGradeFrame = ctk.CTkFrame(self, fg_color = 'transparent')
+            self.namesFrame.grid(column = 0, row = 1, sticky = 'nsew', padx = 20, pady = 10)
+            self.emailGradeFrame.grid(column = 0, row = 2, sticky = 'nsew', padx = 20, pady = 10)
+
+            self.flnameLable = ctk.CTkLabel(self.namesFrame, text = 'First Name                                     Last Name', font = font(22))
+            self.flnameLable.pack(side = 'top', pady = 5)
+
+            self.fnameEntry = ctk.CTkEntry(self.namesFrame, textvariable = self.currentName, font = font(25), width = 200, height = 50)
+            self.fnameEntry.pack(side = 'left', padx = 10)
+
+            self.lnameEntry = ctk.CTkEntry(self.namesFrame, font = font(25), width = 250, height = 50)
+            self.lnameEntry.pack(side = 'right', padx = 10)
+
+
+            self.emailGradeLable = ctk.CTkLabel(self.emailGradeFrame, text = "Student's Email                                       Grade", font = font(22))
+            self.emailGradeLable.pack(side = 'top', pady = 5)
+
+            self.emailEntry =  ctk.CTkEntry(self.emailGradeFrame, font = font(25), width = 350, height = 50)
+            self.emailEntry.pack(side = 'left', padx = 10)
+
+            self.gradeEntry =  ctk.CTkEntry(self.emailGradeFrame, font = font(25), width = 100, height = 50)
+            self.gradeEntry.pack(side = 'right', padx = 10)
+
+
+            self.confirmButton = ctk.CTkButton(self, text = 'Add Student', font = font(20), width = 350, height = 50, command = self.studentConfirmAction)
+            self.confirmButton.grid(column = 0, row = 3, pady = 20)
+
+
+
+    def schoolConfirmAction(self):
+        newSchoolName = self.nameEntry.get()
+        self.currentTab.delete(self.currentTab.selection())
+        self.conn.execQuery(f"update schools set name = '{newSchoolName}' where name = '{self.currentRow}';")
+        self.tables[0].insert(parent = '', index = 0, values = (newSchoolName, ))
+        self.close()
+
+    def classConfirmAction(self):
+        newClassLevel = self.classLevelOption.get()
+        # parentSchoolId = self.conn.resultFromQuery(f"select id from schools where name = '{selectedSchool}'")[0][0]
+        self.conn.execQuery(f"update classes set level = '{newClassLevel}' where id = '{self.currentRow}';")
+        self.currentTab.delete(self.currentTab.selection())
+        self.tables[1].insert(parent = '', index = 0, values = (self.currentRow, newClassLevel, selectedSchool))
+        self.close()
+
+    def studentConfirmAction(self):
+        # TODO
+        # newStudentFName = self.fnameEntry.get()
+        # newStudentLName = self.lnameEntry.get()
+        # newStudentEmail = self.emailEntry.get()
+
+        # newStudentGradeClass = self.gradeEntry.get().upper()
+        # newStudentGrade = int(''.join(filter(str.isdigit, newStudentGradeClass)))
+        # newStudentClass = ''.join(filter(str.isalpha, newStudentGradeClass))
+
+        # parentSchoolId = self.conn.resultFromQuery(f"select id from schools where name = '{selectedSchool}'")[0][0]
+        # parentClassId = selectedClass
+        # self.conn.execQuery(f"insert into students (email, fname, lname, grade, homeclass, schoolid, classid) values ('{newStudentEmail}', '{newStudentFName}', '{newStudentLName}', '{newStudentGrade}', '{newStudentClass}', '{parentSchoolId}', '{parentClassId}');")
+        # self.tables[2].insert(parent = '', index = 0, values = (newStudentEmail, newStudentFName, newStudentLName, newStudentGradeClass))
+        # self.close()
+        pass
+
 class WarningPopup(PopupWindow):
     def __init__(self, master: ctk.CTk, message: str = 'There has been an error. L BOZO.', title: str = 'Warning', width: int = 400, height: int = 200):
         super().__init__(master, title, width, height)
@@ -529,10 +637,13 @@ def openDashboard(userRole):
     
     def removeItemButtonAction():
         if currentRowSelected():
-            warningWindow = ConfirmationPopup(dashboardWindow, removeItem, f'Are you sure you want to delete {currentRowSelected()}?', 'Comfirm Deletion')
+            ConfirmationPopup(dashboardWindow, removeItem, f'Are you sure you want to delete {currentRowSelected()}?', 'Comfirm Deletion')
 
     def addItemButtonAction():
-        addItemWindow = AddItemPopup(dashboardWindow, tabview.get(), databaseConn, (schoolsTable, classesTable, studentsTable))
+        AddItemPopup(dashboardWindow, tabview.get(), databaseConn, (schoolsTable, classesTable, studentsTable))
+    
+    def editItemButtonAction():
+        EditItemPopup(dashboardWindow, tabview.get(), databaseConn, (schoolsTable, classesTable, studentsTable), currentTabSelected(), currentRowSelected())
 
     def signOut(): # action when signOut button is clicked
         dashboardWindow.destroy()
@@ -567,7 +678,7 @@ def openDashboard(userRole):
 
     # rightPanel buttons
     viewItemButton = ctk.CTkButton(rightPanel, text = 'View Item', font = font(35), width = 250, height = 120, corner_radius = cornerRadius)
-    editItemButton = ctk.CTkButton(rightPanel, text = 'Edit Item', font = font(35), width = 250, height = 120, corner_radius = cornerRadius)
+    editItemButton = ctk.CTkButton(rightPanel, text = 'Edit Item', font = font(35), width = 250, height = 120, corner_radius = cornerRadius, command = editItemButtonAction)
     addItemButton = ctk.CTkButton(rightPanel, text = 'Add Item', font = font(35), width = 250, height = 120, corner_radius = cornerRadius, command = addItemButtonAction)
     deleteItemButton = ctk.CTkButton(rightPanel, text = 'Delete Item', font = font(35), width = 250, height = 120, corner_radius = cornerRadius, command = removeItemButtonAction)
 
