@@ -148,10 +148,10 @@ def niceTable(master: any, columns: tuple | list, headings: tuple | list) -> ttk
 def getTableDataSelected(table: ttk.Treeview) -> dict:
     return table.item(table.focus())
 
-def itemSelected(table: ttk.Treeview) -> str | None:
+def itemSelected(table: ttk.Treeview, indexOfData: int = 0) -> str | None:
         selectedRow = getTableDataSelected(table)['values']
         if type(selectedRow) != str:
-            return selectedRow[0]
+            return selectedRow[indexOfData]
         else:
             return None
 
