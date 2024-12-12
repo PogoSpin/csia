@@ -647,7 +647,11 @@ def openDashboard(userRole):
         AddItemPopup(dashboardWindow, tabview.get(), databaseConn, (schoolsTable, classesTable, studentsTable))
     
     def editItemButtonAction():
-        EditItemPopup(dashboardWindow, tabview.get(), databaseConn, (schoolsTable, classesTable, studentsTable), currentTabSelected(), currentRowSelected())
+        currentRow = currentRowSelected()
+        if currentRow:
+            EditItemPopup(dashboardWindow, tabview.get(), databaseConn, (schoolsTable, classesTable, studentsTable), currentTabSelected(), currentRow)
+        else:
+            WarningPopup(dashboardWindow, 'Please select an item to edit first.')
 
     def signOut(): # action when signOut button is clicked
         dashboardWindow.destroy()
