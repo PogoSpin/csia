@@ -340,7 +340,7 @@ class EditItemPopup(PopupWindow):
             self.rowconfigure(2, weight = 1)
             self.rowconfigure(3, weight = 2)
 
-            self.messageLabel = ctk.CTkLabel(self, text = 'Add Student', font = font(40), wraplength = 300, justify = 'center')
+            self.messageLabel = ctk.CTkLabel(self, text = 'Editing Student', font = font(40), wraplength = 300, justify = 'center')
             self.messageLabel.grid(column = 0, row = 0, sticky = 'nsew', pady = (40, 0))
 
             self.namesFrame = ctk.CTkFrame(self, fg_color = 'transparent')
@@ -351,10 +351,12 @@ class EditItemPopup(PopupWindow):
             self.flnameLable = ctk.CTkLabel(self.namesFrame, text = 'First Name                                     Last Name', font = font(22))
             self.flnameLable.pack(side = 'top', pady = 5)
 
-            self.fnameEntry = ctk.CTkEntry(self.namesFrame, textvariable = self.currentName, font = font(25), width = 200, height = 50)
+            self.fnameEntry = ctk.CTkEntry(self.namesFrame, font = font(25), width = 200, height = 50)
+            self.fnameEntry.insert(0, itemSelected(currentTab, 1))
             self.fnameEntry.pack(side = 'left', padx = 10)
 
             self.lnameEntry = ctk.CTkEntry(self.namesFrame, font = font(25), width = 250, height = 50)
+            self.lnameEntry.insert(0, itemSelected(currentTab, 2))
             self.lnameEntry.pack(side = 'right', padx = 10)
 
 
@@ -362,13 +364,15 @@ class EditItemPopup(PopupWindow):
             self.emailGradeLable.pack(side = 'top', pady = 5)
 
             self.emailEntry =  ctk.CTkEntry(self.emailGradeFrame, font = font(25), width = 350, height = 50)
+            self.emailEntry.insert(0, itemSelected(currentTab, 0))
             self.emailEntry.pack(side = 'left', padx = 10)
 
             self.gradeEntry =  ctk.CTkEntry(self.emailGradeFrame, font = font(25), width = 100, height = 50)
+            self.gradeEntry.insert(0, itemSelected(currentTab, 3))
             self.gradeEntry.pack(side = 'right', padx = 10)
 
 
-            self.confirmButton = ctk.CTkButton(self, text = 'Add Student', font = font(20), width = 350, height = 50, command = self.studentConfirmAction)
+            self.confirmButton = ctk.CTkButton(self, text = 'Save Changes', font = font(20), width = 350, height = 50, command = self.studentConfirmAction)
             self.confirmButton.grid(column = 0, row = 3, pady = 20)
 
 
@@ -389,21 +393,20 @@ class EditItemPopup(PopupWindow):
         self.close()
 
     def studentConfirmAction(self):
-        # TODO
-        # newStudentFName = self.fnameEntry.get()
-        # newStudentLName = self.lnameEntry.get()
-        # newStudentEmail = self.emailEntry.get()
+        newStudentFName = self.fnameEntry.get()
+        newStudentLName = self.lnameEntry.get()
+        newStudentEmail = self.emailEntry.get()
+        newStudentGradeClass = self.gradeEntry.get().upper()
 
-        # newStudentGradeClass = self.gradeEntry.get().upper()
-        # newStudentGrade = int(''.join(filter(str.isdigit, newStudentGradeClass)))
-        # newStudentClass = ''.join(filter(str.isalpha, newStudentGradeClass))
+        newStudentGrade = int(''.join(filter(str.isdigit, newStudentGradeClass)))
+        newStudentClass = ''.join(filter(str.isalpha, newStudentGradeClass))
 
-        # parentSchoolId = self.conn.resultFromQuery(f"select id from schools where name = '{selectedSchool}'")[0][0]
-        # parentClassId = selectedClass
-        # self.conn.execQuery(f"insert into students (email, fname, lname, grade, homeclass, schoolid, classid) values ('{newStudentEmail}', '{newStudentFName}', '{newStudentLName}', '{newStudentGrade}', '{newStudentClass}', '{parentSchoolId}', '{parentClassId}');")
-        # self.tables[2].insert(parent = '', index = 0, values = (newStudentEmail, newStudentFName, newStudentLName, newStudentGradeClass))
-        # self.close()
-        pass
+        parentSchoolId = self.conn.resultFromQuery(f"select id from schools where name = '{selectedSchool}'")[0][0]
+        parentClassId = selectedClass
+        self.conn.execQuery(f"update students set email = '{newStudentEmail}', fname = '{newStudentFName}', lname = '{newStudentLName}', grade = '{newStudentGrade}', homeclass = '{newStudentClass}', schoolid = '{parentSchoolId}', classid = '{parentClassId}' where email = '{selectedStudent}';")
+        self.currentTab.delete(self.currentTab.selection())
+        self.tables[2].insert(parent = '', index = 0, values = (newStudentEmail, newStudentFName, newStudentLName, newStudentGradeClass))
+        self.close()
 
 class WarningPopup(PopupWindow):
     def __init__(self, master: ctk.CTk, message: str = 'There has been an error. L BOZO.', title: str = 'Warning', width: int = 400, height: int = 200):
