@@ -9,7 +9,8 @@ from cryptography.fernet import Fernet
 
 import smtplib
 from email.message import EmailMessage
-from random import randrange
+from random import randrange, choice, shuffle, choices
+from string import ascii_lowercase, ascii_uppercase, digits
 
 # Example key
 localEncryptionKey = b'IN08AtGTPSYE8mqtyKqwPTQP0ihKxi9672iclN3qEE0='
@@ -159,7 +160,6 @@ def clearTable(table: ttk.Treeview):
     for item in table.get_children():
         table.delete(item)
 
-
 def findRowID(treeview: ttk.Treeview, value: str) -> str | None:   # finds table row ID with text of first column
     for itemId in treeview.get_children():
         if treeview.item(treeview.selection())['values'][0] == value:
@@ -169,9 +169,30 @@ def findRowID(treeview: ttk.Treeview, value: str) -> str | None:   # finds table
 def font(size) -> CTkFont:
     return CTkFont('Roboto', size)
 
+def generatePassword(length: str = 8):
+    # Define character pools
+    lowercase = ascii_lowercase
+    uppercase = ascii_uppercase
+    digits = digits
+    all_characters = lowercase + uppercase + digits
+    
+    # Ensure the password contains at least one character from each group
+    password = [
+        choice(lowercase),
+        choice(uppercase),
+        choice(digits)
+    ]
+    
+    # Fill the remaining password length with random characters
+    password += choices(all_characters, k=length - len(password))
+    
+    # Shuffle the characters to ensure randomness
+    shuffle(password)
+    
+    return ''.join(password)
+
 
 def sendResetPasswordEmail(receiverEmail: str, databaseConn: SqlConnection):
-
     if databaseConn.resultFromQuery(f"select email from users where email = '{receiverEmail}';"):
         securityCode = randrange(10000000, 99999999)
 
