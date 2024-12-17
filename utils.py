@@ -206,7 +206,7 @@ You have been added to Dar Lusitana as a teacher! Through the Dar Lusitana Class
         body = f'''Hi {fname}!\n
 You have been added to Dar Lusitana as an administrator! Through the Dar Lusitana Class Management program, you will be able to view, add, edit, and remove schools, classes, and students. This grants you significant control over the Portuguese language classes.\n'''
 
-    body += f'''\nYou can download the program at DOWNLOAD LINK, and your sign in credentials are as follows:
+    body += f'''\nYou can download the program at (whoops no download link yet (: )), and your sign in credentials are as follows:
 
 Email: {receiverEmail}
 Password: {newUserPassword}
