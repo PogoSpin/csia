@@ -191,6 +191,51 @@ def generatePassword(length: str = 8):
     
     return ''.join(password)
 
+def sendNewUserEmail(receiverEmail: str, fname: str, role: str):
+    newUserPassword = generatePassword()
+
+    # Email details
+    senderEmail = 'dar.lusitana@gmail.com'
+    password = 'umka nvcb ubhg clhb'   # store on cloud database instead
+    subject = 'Welcome to Dar Lusitana'
+
+    if role == 'Admin':
+        body = f'''Hi {fname}!
+You have been added to Dar Lusitana as a teacher! Through the Dar Lusitana Class Management program, you will be able to access your Portuguese language classes and view your students students.\n'''
+    
+    else:
+        body = f'''Hi {fname}!
+You have been added to Dar Lusitana as an administrator! Through the Dar Lusitana Class Management program, you will be able to view, add, edit, and remove schools, classes, and students. This grants you significant control over the Portuguese language classes.\n'''
+
+    body += f'''You can download the program at DOWNLOAD LINK, and your sign in credentials are as follows:
+
+Email: {receiverEmail}
+Password: {newUserPassword}
+
+You can change your password by using the forgot password system on the sign in page.'''
+
+
+    # Create an EmailMessage object
+    msg = EmailMessage()
+    msg['From'] = senderEmail
+    msg['To'] = receiverEmail
+    msg['Subject'] = subject
+    msg.set_content(body)
+
+    # SMTP server configuration
+    smtpServer = 'smtp.gmail.com'
+    smtpPort = 587
+
+    try:
+        with smtplib.SMTP(smtpServer, smtpPort) as server:
+            server.starttls()  # Secure the connection
+            server.login(senderEmail, password)
+            server.send_message(msg)
+        print('Email sent successfully!')
+        return newUserPassword
+    except Exception as e:
+        print(f'Error sending email: {e}')
+
 
 def sendResetPasswordEmail(receiverEmail: str, databaseConn: SqlConnection):
     if databaseConn.resultFromQuery(f"select email from users where email = '{receiverEmail}';"):
