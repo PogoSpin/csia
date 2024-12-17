@@ -667,6 +667,8 @@ def openDashboard(userRole):
             return selectedClass
         elif currentTab == 'Students':
             return selectedStudent
+        else:
+            return selectedUser
         
     def currentTabSelected() -> Treeview:
         currentTab = tabview.get()
@@ -676,6 +678,8 @@ def openDashboard(userRole):
             return classesTable
         elif currentTab == 'Students':
             return studentsTable
+        else:
+            return usersTable
 
     def removeItem():
         'removes item and all children'
@@ -714,6 +718,9 @@ def openDashboard(userRole):
             
             # after all classes and all students in those classes r deleted, finally delete the entire school
             databaseConn.execQuery(f"delete from schools where name = '{selectedSchool}';")
+        
+        else:
+            databaseConn.execQuery(f"delete from users where email = '{selectedUser}';")
         
         # visually delete the selected row from the selected table
         currentTab.delete(currentTab.selection())
