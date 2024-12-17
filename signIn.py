@@ -2,7 +2,7 @@ import customtkinter as ctk
 from utils import font, writeSavedCredentials, getCredentialsPath, verifySignIn, sendResetPasswordEmail, hashPassword
 from dblib import *
 import app
-import threading
+from threading import Thread
 
 class NewPasswordPopup(app.PopupWindow):
     def __init__(self, master: ctk.CTk, databaseConn: SqlConnection, userEmail):
@@ -109,7 +109,7 @@ def openSignInWindow(databaseConnection):
                 print(result)
                 CodeVerificationPopup(signInWindow, result, lambda: NewPasswordPopup(signInWindow, databaseConnection, resetEmail))
         
-        thread = threading.Thread(target = sendEmailCode)
+        thread = Thread(target = sendEmailCode)
         thread.start()
 
     forgotPasswordButton = ctk.CTkButton(signInWindow, text = 'Forgot Password?', command = forgotPasswordAction, font = font(20), width = 180, height = 40, fg_color = 'transparent')
