@@ -567,7 +567,7 @@ def openDashboard(userRole):
     # classes table load data
     def loadToClassesTable(filter: str = None):   # FYI filter is built in class; might cause issues
         # this next query basicaly selects * from classes but shows the last column as the school name instead of id
-        chatGptWizardryQuery = 'SELECT c.id, c.level, s.name AS school_name FROM classes c INNER JOIN schools s ON c.schoolid = s.id'
+        chatGptWizardryQuery = 'SELECT c.id, c.level, u.fname AS teacher_name FROM classes c LEFT JOIN users u ON c.teacherid = u.id'
 
         if filter:
             schoolId = databaseConn.resultFromQuery(f"select id from schools where name = '{filter}'")[0][0]
@@ -604,7 +604,7 @@ def openDashboard(userRole):
 
     # create tables
     schoolsTable = niceTable(schoolsTab, ('schoolName',), ('School Name',))
-    classesTable = niceTable(classesTab, ('classId', 'level', 'schoolName'), ('Class ID', 'Level', 'School Name'))
+    classesTable = niceTable(classesTab, ('classId', 'level', 'teacherName'), ('Class ID', 'Level', 'Teacher Name'))
     studentsTable = niceTable(studentsTab, ('email', 'fname', 'lname', 'grade'), ('Email', 'First Name', 'Last Name', 'Grade'))
 
     usersTable = niceTable(usersTab, ('email', 'fname', 'lname', 'role'), ('Email', 'First Name', 'Last Name', 'Role'))
