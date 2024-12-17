@@ -198,9 +198,9 @@ def sendNewUserEmail(receiverEmail: str, fname: str, role: str):
     password = 'umka nvcb ubhg clhb'   # store on cloud database instead
     subject = 'Welcome to Dar Lusitana'
 
-    if role == 'Admin':
+    if role == 'Teacher':
         body = f'''Hi {fname}!\n
-You have been added to Dar Lusitana as a teacher! Through the Dar Lusitana Class Management program, you will be able to access your Portuguese language classes and view your students students.\n'''
+You have been added to Dar Lusitana as a teacher! Through the Dar Lusitana Class Management program, you will be able to access your Portuguese language classes and view your students.\n'''
     
     else:
         body = f'''Hi {fname}!\n
