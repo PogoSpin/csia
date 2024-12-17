@@ -173,7 +173,6 @@ def generatePassword(length: str = 8):
     # Define character pools
     lowercase = ascii_lowercase
     uppercase = ascii_uppercase
-    digits = digits
     all_characters = lowercase + uppercase + digits
     
     # Ensure the password contains at least one character from each group
