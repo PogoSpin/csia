@@ -105,7 +105,7 @@ def openSignInWindow(databaseConnection):
 
         def sendEmailCode():
             result = sendResetPasswordEmail(resetEmail, databaseConnection)
-            if result != -1 and result != 0:
+            if result != -1 and result != 0:     # TODO: Add fallback in case of result = -1?
                 print(result)
                 CodeVerificationPopup(signInWindow, result, lambda: NewPasswordPopup(signInWindow, databaseConnection, resetEmail))
         
