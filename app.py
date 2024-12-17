@@ -471,7 +471,7 @@ def openDashboard(userRole):
         if event:   # if coming from double click bind, also change the tab
             tabview.set('Students')
             
-        if tabview.get() == 'Students':
+        if tabview.get() == 'Students' or tabview.get() == 'Users':
             confStyle(dashboardWindow, 45, 30)
         else:
             confStyle(dashboardWindow)
@@ -486,6 +486,7 @@ def openDashboard(userRole):
     classesTab = tabview.add('Classes')
     studentsTab = tabview.add('Students')
 
+    usersTab = tabview.add('Users')
 
     # grid setup for tables
     schoolsTab.rowconfigure(0, weight = 1)
@@ -496,6 +497,9 @@ def openDashboard(userRole):
 
     studentsTab.rowconfigure(0, weight = 1)
     studentsTab.columnconfigure(0, weight = 1)
+
+    usersTab.rowconfigure(0, weight = 1)
+    usersTab.columnconfigure(0, weight = 1)
 
     # schools table load data
     def loadToSchoolsTable():
@@ -525,19 +529,26 @@ def openDashboard(userRole):
             studentsData = databaseConn.resultFromQuery('select * from students;')
 
         for studentData in studentsData:
-            studentData = list(studentData) 
+            studentData = list(studentData)
         
             studentData = studentData[1:6]
             studentData[3] = str(studentData[3]) + studentData[4]
             studentData.pop(4)
             studentsTable.insert(parent = '', index = 0, values = studentData)
     
+    def loadToUsersTable():
+        users = databaseConn.resultFromQuery("select email, fname, lname, role from users;")
+        for user in users:
+            usersTable.insert(parent = '', index = 0, values = user)
+
     confStyle(dashboardWindow)
 
     # create tables
     schoolsTable = niceTable(schoolsTab, ('schoolName',), ('School Name',))
     classesTable = niceTable(classesTab, ('classId', 'level', 'schoolName'), ('Class ID', 'Level', 'School Name'))
     studentsTable = niceTable(studentsTab, ('email', 'fname', 'lname', 'grade'), ('Email', 'First Name', 'Last Name', 'Grade'))
+
+    usersTable = niceTable(usersTab, ('email', 'fname', 'lname', 'role'), ('Email', 'First Name', 'Last Name', 'Role'))
 
 
     def setSelectedSchool(event):
@@ -574,10 +585,14 @@ def openDashboard(userRole):
     classesTable.grid(row = 0, column = 0, sticky = 'nsew')
     studentsTable.grid(row = 0, column = 0, sticky = 'nsew')
 
+    usersTable.grid(row = 0, column = 0, sticky = 'nsew')
+
     # load initial / all data to tables, since none are selected
     loadToSchoolsTable()
     loadToClassesTable()
     loadToStudentsTable()
+
+    loadToUsersTable()
 
     def currentRowSelected() -> str: # current item selected on all tables, ie: the item selected in current table user is in
         currentTab = tabview.get()
@@ -637,7 +652,6 @@ def openDashboard(userRole):
         
         # visually delete the selected row from the selected table
         currentTab.delete(currentTab.selection())
-
     
     def removeItemButtonAction():
         if currentRowSelected():
