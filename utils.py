@@ -199,14 +199,14 @@ def sendNewUserEmail(receiverEmail: str, fname: str, role: str):
     subject = 'Welcome to Dar Lusitana'
 
     if role == 'Admin':
-        body = f'''Hi {fname}!
+        body = f'''Hi {fname}!\n
 You have been added to Dar Lusitana as a teacher! Through the Dar Lusitana Class Management program, you will be able to access your Portuguese language classes and view your students students.\n'''
     
     else:
-        body = f'''Hi {fname}!
+        body = f'''Hi {fname}!\n
 You have been added to Dar Lusitana as an administrator! Through the Dar Lusitana Class Management program, you will be able to view, add, edit, and remove schools, classes, and students. This grants you significant control over the Portuguese language classes.\n'''
 
-    body += f'''You can download the program at DOWNLOAD LINK, and your sign in credentials are as follows:
+    body += f'''\nYou can download the program at DOWNLOAD LINK, and your sign in credentials are as follows:
 
 Email: {receiverEmail}
 Password: {newUserPassword}
