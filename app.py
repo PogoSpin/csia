@@ -6,6 +6,7 @@ from dblib import *
 from utils import *
 from connectionParams import *
 
+from threading import Thread
 
 cornerRadius = 20
 
@@ -69,6 +70,8 @@ def main():
 selectedSchool = None
 selectedClass = None
 selectedStudent = None
+
+selectedUser = None
 
 class WarningWindow(ctk.CTk):
     def __init__(self, message: str = 'There has been an error. L BOZO.', title: str = 'Warning', width: int = 400, height: int = None):
@@ -187,7 +190,6 @@ class ConfirmationPopup(PopupWindow):
 
 class AddItemPopup(PopupWindow):
     def __init__(self, master: ctk.CTk, addTableName: str, conn: SqlConnection, tables: tuple[Treeview, Treeview, Treeview]):
-        super().__init__(master, f'Add {addTableName}')
 
         self.conn = conn
         self.tables = tables
@@ -196,6 +198,7 @@ class AddItemPopup(PopupWindow):
         self.currentNameTrace = self.currentName.trace_add('write', self.updateButtonText)
 
         if addTableName == 'Schools':
+            super().__init__(master, f'Add {addTableName}')
             self.messageLabel = ctk.CTkLabel(self, text = 'Add School', font = font(40), wraplength = 300, justify = 'center') 
             self.messageLabel.pack(pady = 40)
 
@@ -209,8 +212,7 @@ class AddItemPopup(PopupWindow):
             self.confirmButton.pack(pady = 20, padx = 75)
 
         elif addTableName == 'Classes':
-            # self.currentName.trace_remove('write', self.currentNameTrace)
-
+            super().__init__(master, f'Add {addTableName}')
             self.messageLabel = ctk.CTkLabel(self, text = 'Add Class', font = font(40), wraplength = 300, justify = 'center')
             self.messageLabel.pack(pady = 40)
 
@@ -223,7 +225,8 @@ class AddItemPopup(PopupWindow):
             self.confirmButton = ctk.CTkButton(self, text = 'Add Class', font = font(20), width = 350, height = 50, command = self.classConfirmAction)
             self.confirmButton.pack(pady = 20, padx = 75)
 
-        else:
+        elif addTableName == 'Students':
+            super().__init__(master, f'Add {addTableName}')
             self.columnconfigure(0, weight = 2)
             self.rowconfigure(0, weight = 1)
             self.rowconfigure(1, weight = 1)
@@ -251,14 +254,53 @@ class AddItemPopup(PopupWindow):
             self.emailGradeLable = ctk.CTkLabel(self.emailGradeFrame, text = "Student's Email                                       Grade", font = font(22))
             self.emailGradeLable.pack(side = 'top', pady = 5)
 
-            self.emailEntry =  ctk.CTkEntry(self.emailGradeFrame, font = font(25), width = 350, height = 50)
+            self.emailEntry = ctk.CTkEntry(self.emailGradeFrame, font = font(25), width = 350, height = 50)
             self.emailEntry.pack(side = 'left', padx = 10)
 
-            self.gradeEntry =  ctk.CTkEntry(self.emailGradeFrame, font = font(25), width = 100, height = 50)
+            self.gradeEntry = ctk.CTkEntry(self.emailGradeFrame, font = font(25), width = 100, height = 50)
             self.gradeEntry.pack(side = 'right', padx = 10)
 
 
             self.confirmButton = ctk.CTkButton(self, text = 'Add Student', font = font(20), width = 350, height = 50, command = self.studentConfirmAction)
+            self.confirmButton.grid(column = 0, row = 3, pady = 20)
+
+        else:
+            super().__init__(master, f'Add {addTableName}', width = 570)
+            self.columnconfigure(0, weight = 2)
+            self.rowconfigure(0, weight = 1)
+            self.rowconfigure(1, weight = 1)
+            self.rowconfigure(2, weight = 1)
+            self.rowconfigure(3, weight = 2)
+
+            self.messageLabel = ctk.CTkLabel(self, text = 'Add User', font = font(40), wraplength = 300, justify = 'center')
+            self.messageLabel.grid(column = 0, row = 0, sticky = 'nsew', pady = (40, 0))
+
+            self.namesFrame = ctk.CTkFrame(self, fg_color = 'transparent')
+
+            self.emailRoleFrame = ctk.CTkFrame(self, fg_color = 'transparent')
+            self.namesFrame.grid(column = 0, row = 1, sticky = 'nsew', padx = 20, pady = 10)
+            self.emailRoleFrame.grid(column = 0, row = 2, sticky = 'nsew', padx = 20, pady = 10)
+
+            self.flnameLable = ctk.CTkLabel(self.namesFrame, text = 'First Name                                                 Last Name', font = font(22))
+            self.flnameLable.pack(side = 'top', pady = 5)
+
+            self.fnameEntry = ctk.CTkEntry(self.namesFrame, textvariable = self.currentName, font = font(25), width = 200, height = 50)
+            self.fnameEntry.pack(side = 'left', padx = 10)
+
+            self.lnameEntry = ctk.CTkEntry(self.namesFrame, font = font(25), width = 290, height = 50)
+            self.lnameEntry.pack(side = 'right', padx = 10)
+
+            self.emailRoleLable = ctk.CTkLabel(self.emailRoleFrame, text = "User's Email                                                           Role", font = font(22))
+            self.emailRoleLable.pack(side = 'top', pady = 5)
+
+            self.emailEntry = ctk.CTkEntry(self.emailRoleFrame, font = font(25), width = 350, height = 50)
+            self.emailEntry.pack(side = 'left', padx = 10)
+
+            self.roleOption = ctk.CTkOptionMenu(self.emailRoleFrame, width = 150, height = 50, font = font(20), values = ['Admin', 'Teacher'])
+            self.roleOption.pack(side = 'right', padx = 10)
+
+
+            self.confirmButton = ctk.CTkButton(self, text = 'Add User', font = font(20), width = 350, height = 50, command = self.userConfirmAction)
             self.confirmButton.grid(column = 0, row = 3, pady = 20)
 
 
@@ -291,6 +333,22 @@ class AddItemPopup(PopupWindow):
         self.tables[2].insert(parent = '', index = 0, values = (newStudentEmail, newStudentFName, newStudentLName, newStudentGradeClass))
         self.close()
 
+    def userConfirmAction(self):
+        newUserFName = self.fnameEntry.get()
+        newUserLName = self.lnameEntry.get()
+        newUserEmail = self.emailEntry.get()
+        newUserRole = self.roleOption.get()
+
+        def addUser():
+            print('trying')
+            newUserPassword = hashPassword(sendNewUserEmail(newUserEmail, newUserFName, newUserRole)).decode()
+            
+            self.conn.execQuery(f"insert into users (email, password, fname, lname, role) values ('{newUserEmail}', '{newUserPassword}', '{newUserFName}', '{newUserLName}', '{newUserRole.lower()}');")
+            self.tables[3].insert(parent = '', index = 0, values = (newUserEmail, newUserFName, newUserLName, newUserRole))
+            self.close()
+
+        thread = Thread(target = addUser)
+        thread.start()
 
     def updateButtonText(self, *args):
         newText = f"Add {self.currentName.get()}"
@@ -539,6 +597,8 @@ def openDashboard(userRole):
     def loadToUsersTable():
         users = databaseConn.resultFromQuery("select email, fname, lname, role from users;")
         for user in users:
+            user = list(user)
+            user[3] = user[3].capitalize()
             usersTable.insert(parent = '', index = 0, values = user)
 
     confStyle(dashboardWindow)
@@ -571,10 +631,16 @@ def openDashboard(userRole):
         global selectedStudent
         selectedStudent = itemSelected(studentsTable)
 
+    def setSelectedUser(event):
+        global selectedUser
+        selectedUser = itemSelected(usersTable)
+
     # bindings to refresh tables when new selection
     schoolsTable.bind('<ButtonRelease-1>', setSelectedSchool)
     classesTable.bind('<ButtonRelease-1>', setSelectedClass)
     studentsTable.bind('<ButtonRelease-1>', setSelectedStudent)
+
+    usersTable.bind('<ButtonRelease-1>', setSelectedUser)
 
     # double click item to go straight to next tab
     schoolsTable.bind('<Double-Button-1>', lambda e: tabview.set('Classes'))
@@ -658,7 +724,7 @@ def openDashboard(userRole):
             ConfirmationPopup(dashboardWindow, removeItem, f'Are you sure you want to delete {currentRowSelected()}?', 'Comfirm Deletion')
 
     def addItemButtonAction():
-        AddItemPopup(dashboardWindow, tabview.get(), databaseConn, (schoolsTable, classesTable, studentsTable))
+        AddItemPopup(dashboardWindow, tabview.get(), databaseConn, (schoolsTable, classesTable, studentsTable, usersTable))
     
     def editItemButtonAction():
         currentRow = currentRowSelected()
