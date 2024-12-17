@@ -339,14 +339,13 @@ class AddItemPopup(PopupWindow):
         newUserEmail = self.emailEntry.get()
         newUserRole = self.roleOption.get()
 
-        def addUser():
-            print('trying')
-            newUserPassword = hashPassword(sendNewUserEmail(newUserEmail, newUserFName, newUserRole)).decode()
-            
-            self.conn.execQuery(f"insert into users (email, password, fname, lname, role) values ('{newUserEmail}', '{newUserPassword}', '{newUserFName}', '{newUserLName}', '{newUserRole.lower()}');")
-            self.tables[3].insert(parent = '', index = 0, values = (newUserEmail, newUserFName, newUserLName, newUserRole))
-            self.close()
+        self.tables[3].insert(parent = '', index = 0, values = (newUserEmail, newUserFName, newUserLName, newUserRole))
+        self.close()
 
+        def addUser():
+            newUserPassword = hashPassword(sendNewUserEmail(newUserEmail, newUserFName, newUserRole)).decode()
+            self.conn.execQuery(f"insert into users (email, password, fname, lname, role) values ('{newUserEmail}', '{newUserPassword}', '{newUserFName}', '{newUserLName}', '{newUserRole.lower()}');")
+        
         thread = Thread(target = addUser)
         thread.start()
 
