@@ -195,7 +195,7 @@ def sendNewUserEmail(receiverEmail: str, fname: str, role: str):
 
     # Email details
     senderEmail = 'dar.lusitana@gmail.com'
-    password = 'umka nvcb ubhg clhb'   # store on cloud database instead
+    password = 'zbys lykk maxs qwgf'   # store on cloud database instead
     subject = 'Welcome to Dar Lusitana'
 
     if role == 'Teacher':
@@ -242,7 +242,7 @@ def sendResetPasswordEmail(receiverEmail: str, databaseConn: SqlConnection):
 
         # Email details
         senderEmail = 'dar.lusitana@gmail.com'
-        password = 'umka nvcb ubhg clhb'   # store on cloud database instead
+        password = 'zbys lykk maxs qwgf'   # store on cloud database instead
         subject = 'Reset Password'
         body = f'''Hi {databaseConn.resultFromQuery(f"select fname from users where email = '{receiverEmail}'")[0][0]},
 There was a request to change your password!
