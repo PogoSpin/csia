@@ -382,7 +382,7 @@ class EditItemPopup(PopupWindow):
         self.currentRow = currentRow
 
         if addTableName == 'Schools':
-            super().__init__(master, f'Add {addTableName}')
+            super().__init__(master, f'Editing School')
 
             self.messageLabel = ctk.CTkLabel(self, text = 'Edit School', font = font(40), wraplength = 300, justify = 'center')
             self.messageLabel.pack(pady = 40)
@@ -398,23 +398,41 @@ class EditItemPopup(PopupWindow):
             self.confirmButton.pack(pady = 20, padx = 75)
 
         elif addTableName == 'Classes':
-            super().__init__(master, f'Add {addTableName}')
-
+            super().__init__(master, f'Editing Class', height = 450)
             self.messageLabel = ctk.CTkLabel(self, text = 'Edit Class', font = font(40), wraplength = 300, justify = 'center')
-            self.messageLabel.pack(pady = 40)
+            self.messageLabel.pack(pady = (40, 30))
 
             self.classLevelLabel = ctk.CTkLabel(self, text = 'Class Level', font = font(20), wraplength = 300, justify = 'center')
-            self.classLevelLabel.pack(pady = 10)
+            self.classLevelLabel.pack(pady = (0, 10))
 
             self.classLevelOption = ctk.CTkOptionMenu(self, width = 350, height = 50, font = font(20), values = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])
             self.classLevelOption.set(itemSelected(self.currentTab, 1))
-            self.classLevelOption.pack(padx = 20)
+            self.classLevelOption.pack(padx = 20, pady = (0, 20))
+
+            self.assignedTeacherLabel = ctk.CTkLabel(self, text = 'Assigned Teacher', font = font(20), wraplength = 300, justify = 'center')
+            self.assignedTeacherLabel.pack(pady = (0, 10))
+
+            teachersData = self.conn.resultFromQuery("select fname, lname, id from users where role = 'teacher';")
+
+            teacherNames = []
+            for teacher in teachersData:
+                teacherNames.append(f'{teacher[0]} {teacher[1]}')
+
+            self.teacherIds = {}
+            for i, name in enumerate(teacherNames):
+                self.teacherIds[name] = teachersData[i][2]
+
+            self.assignedTeacherOption = ctk.CTkOptionMenu(self, width = 350, height = 50, font = font(20), values = teacherNames)
+            self.assignedTeacherOption.set(list(self.teacherIds.keys())[list(self.teacherIds.values()).index(itemSelected(tables[1], 3))])
+            self.assignedTeacherOption.pack(padx = 20, pady = (10, 0))
 
             self.confirmButton = ctk.CTkButton(self, text = 'Save Changes', font = font(20), width = 350, height = 50, command = self.classConfirmAction)
             self.confirmButton.pack(pady = 20, padx = 75)
 
+
+
         elif addTableName == 'Students':
-            super().__init__(master, f'Add {addTableName}')
+            super().__init__(master, f'Editing Student')
 
             self.columnconfigure(0, weight = 2)
             self.rowconfigure(0, weight = 1)
@@ -511,10 +529,12 @@ class EditItemPopup(PopupWindow):
 
     def classConfirmAction(self):
         newClassLevel = self.classLevelOption.get()
-        # parentSchoolId = self.conn.resultFromQuery(f"select id from schools where name = '{selectedSchool}'")[0][0]
-        self.conn.execQuery(f"update classes set level = '{newClassLevel}' where id = '{self.currentRow}';")
+        newClassTeacher = self.assignedTeacherOption.get()
+        newClassTeacherId = self.teacherIds[newClassTeacher]
+
+        self.conn.execQuery(f"update classes set level = '{newClassLevel}', teacherid = {newClassTeacherId} where id = '{self.currentRow}';")
         self.currentTab.delete(self.currentTab.selection())
-        self.tables[1].insert(parent = '', index = 0, values = (self.currentRow, newClassLevel, selectedSchool))
+        self.tables[1].insert(parent = '', index = 0, values = (self.currentRow, newClassLevel, newClassTeacher.split()[0], newClassTeacherId))
         self.close()
 
     def studentConfirmAction(self):
