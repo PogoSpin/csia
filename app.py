@@ -4,6 +4,7 @@ from tkinter.font import Font
 # from signIn import *
 from dblib import *
 from utils import *
+import random
 from connectionParams import *
 
 from threading import Thread
@@ -212,15 +213,31 @@ class AddItemPopup(PopupWindow):
             self.confirmButton.pack(pady = 20, padx = 75)
 
         elif addTableName == 'Classes':
-            super().__init__(master, f'Add {addTableName}')
+            super().__init__(master, f'Add {addTableName}', height = 450)
             self.messageLabel = ctk.CTkLabel(self, text = 'Add Class', font = font(40), wraplength = 300, justify = 'center')
-            self.messageLabel.pack(pady = 40)
+            self.messageLabel.pack(pady = (40, 30))
 
             self.classLevelLabel = ctk.CTkLabel(self, text = 'Class Level', font = font(20), wraplength = 300, justify = 'center')
-            self.classLevelLabel.pack(pady = 10)
+            self.classLevelLabel.pack(pady = (0, 10))
 
             self.classLevelOption = ctk.CTkOptionMenu(self, width = 350, height = 50, font = font(20), values = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])
-            self.classLevelOption.pack(padx = 20)
+            self.classLevelOption.pack(padx = 20, pady = (0, 20))
+
+            self.assignedTeacherLabel = ctk.CTkLabel(self, text = 'Assigned Teacher', font = font(20), wraplength = 300, justify = 'center')
+            self.assignedTeacherLabel.pack(pady = (0, 10))
+
+            teachersData = self.conn.resultFromQuery("select fname, lname, id from users where role = 'teacher';")
+
+            teacherNames = []
+            for teacher in teachersData:
+                teacherNames.append(f'{teacher[0]} {teacher[1]}')
+
+            self.teacherIds = {}
+            for i, name in enumerate(teacherNames):
+                self.teacherIds[name] = teachersData[i][2]
+
+            self.assignedTeacherOption = ctk.CTkOptionMenu(self, width = 350, height = 50, font = font(20), values = teacherNames)
+            self.assignedTeacherOption.pack(padx = 20, pady = (10, 0))
 
             self.confirmButton = ctk.CTkButton(self, text = 'Add Class', font = font(20), width = 350, height = 50, command = self.classConfirmAction)
             self.confirmButton.pack(pady = 20, padx = 75)
@@ -311,9 +328,13 @@ class AddItemPopup(PopupWindow):
 
     def classConfirmAction(self):
         newClassLevel = self.classLevelOption.get()
+        newClassTeacher = self.assignedTeacherOption.get()
+        newClassTeacherId = self.teacherIds[newClassTeacher]
+
         parentSchoolId = self.conn.resultFromQuery(f"select id from schools where name = '{selectedSchool}'")[0][0]
-        self.conn.execQuery(f"insert into classes (level, schoolid) values ('{newClassLevel}', {parentSchoolId});")
-        self.tables[1].insert(parent = '', index = 0, values = (self.conn.resultFromQuery('select max(id) from classes;'), newClassLevel, selectedSchool))
+        self.conn.execQuery(f"insert into classes (level, schoolid, teacherid) values ('{newClassLevel}', {parentSchoolId}, {newClassTeacherId});")
+
+        self.tables[1].insert(parent = '', index = 0, values = (self.conn.resultFromQuery('select max(id) from classes;'), newClassLevel, newClassTeacher.split()[0], newClassTeacherId))
         self.close()
 
     def studentConfirmAction(self):
@@ -625,7 +646,7 @@ def openDashboard(userRole):
     # classes table load data
     def loadToClassesTable(filter: str = None):   # FYI filter is built in class; might cause issues
         # this next query basicaly selects * from classes but shows the last column as the school name instead of id
-        chatGptWizardryQuery = 'SELECT c.id, c.level, u.fname AS teacher_name FROM classes c LEFT JOIN users u ON c.teacherid = u.id'
+        chatGptWizardryQuery = 'SELECT c.id, c.level, u.fname AS teacher_name, c.teacherid FROM classes c LEFT JOIN users u ON c.teacherid = u.id'
 
         if filter:
             schoolId = databaseConn.resultFromQuery(f"select id from schools where name = '{filter}'")[0][0]
